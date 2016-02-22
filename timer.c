@@ -17,6 +17,9 @@
 #error TIMER_FREQ <= 1000 recommended
 #endif
 
+/* Used to store blocked threads. */
+static struct list wait_list;
+
 /* Number of timer ticks since OS booted. */
 static int64_t ticks;
 
@@ -37,6 +40,7 @@ timer_init (void)
 {
   pit_configure_channel (0, 2, TIMER_FREQ);
   intr_register_ext (0x20, timer_interrupt, "8254 Timer");
+  list_init(&wait_list);
 }
 
 /* Calibrates loops_per_tick, used to implement brief delays. */
@@ -90,10 +94,16 @@ void
 timer_sleep (int64_t ticks) 
 {
   int64_t start = timer_ticks ();
-
   ASSERT (intr_get_level () == INTR_ON);
-  while (timer_elapsed (start) < ticks) 
-    thread_yield ();
+
+  enum intr_level old_level = intr_disable();
+ 
+  struct thread* t = thread_current(); 
+  t -> wake_tick = start + ticks;
+  list_insert_ordered(&wait_list, & t->sleep_elem, least_sleep, NULL);
+ 
+  thread_block(); 
+  intr_set_level(old_level);
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
@@ -172,6 +182,24 @@ timer_interrupt (struct intr_frame *args UNUSED)
 {
   ticks++;
   thread_tick ();
+
+  if(list_empty(&wait_list)) 
+    return;
+
+  struct list_elem *a = list_front(&wait_list);
+  struct thread *pThread = list_entry(a, struct thread, sleep_elem);
+
+  struct list_elem *e = list_head (&wait_list);
+  int max_priority = 0;
+  while ((e = list_next (e)) != list_end (&wait_list)) {
+    struct thread *pThread = list_entry(e, struct thread, sleep_elem);
+    if(pThread->wake_tick <= ticks) {
+	list_pop_front(&wait_list);
+        thread_unblock(pThread);
+	e = list_head (&wait_list);
+    } else
+	break;
+  }
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
