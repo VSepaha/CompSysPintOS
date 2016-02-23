@@ -568,12 +568,12 @@ schedule (void)
   thread_schedule_tail (prev);
 }
 
-
+/* Function created to compare the elements in the list and return true if 
+the wake_tick for thread a is less than that of thread b. Return false if 
+the opposite is true. */
 bool least_sleep(const struct list_elem *a, const struct list_elem *b, void *aux){
-	struct thread *a_thread;
-        struct thread *b_thread;
-	a_thread = list_entry(a, struct thread, sleep_elem);
-	b_thread = list_entry(b, struct thread, sleep_elem);
+	struct thread *a_thread = list_entry(a, struct thread, sleep_elem);
+	struct thread *b_thread = list_entry(b, struct thread, sleep_elem);
 	return (a_thread->wake_tick < b_thread->wake_tick);
 }
 

@@ -90,19 +90,23 @@ timer_elapsed (int64_t then)
 
 /* Sleeps for approximately TICKS timer ticks.  Interrupts must
    be turned on. */
+/* Edited for alarm clock */
 void
 timer_sleep (int64_t ticks) 
 {
   int64_t start = timer_ticks ();
   ASSERT (intr_get_level () == INTR_ON);
+  
+  enum intr_level old_level = intr_disable(); 
+ 
+  struct thread* t = thread_current(); /* Save the current thread to a variable t */
+  t -> wake_tick = start + ticks; /* Set the time when the thread should wake up */
 
-  enum intr_level old_level = intr_disable();
+  /* Insert into list depending on the sleep time of the thread. The function 
+least_sleep is defined in thread.c */
+  list_insert_ordered(&wait_list, & t->sleep_elem, least_sleep, NULL); 
  
-  struct thread* t = thread_current(); 
-  t -> wake_tick = start + ticks;
-  list_insert_ordered(&wait_list, & t->sleep_elem, least_sleep, NULL);
- 
-  thread_block(); 
+  thread_block(); /* Block the thread */
   intr_set_level(old_level);
 }
 
@@ -177,20 +181,22 @@ timer_print_stats (void)
 }
 
 /* Timer interrupt handler. */
+/* Edited for alarm clock */
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
   ticks++;
   thread_tick ();
 
+/* If no elements in list, there is no need to continue timer_interrupt */
   if(list_empty(&wait_list)) 
     return;
 
-  struct list_elem *a = list_front(&wait_list);
-  struct thread *pThread = list_entry(a, struct thread, sleep_elem);
+  struct list_elem *element = list_front(&wait_list); /* Get element at front of list and save to element */ 
+  struct list_elem *e = list_head (&wait_list); /* Get the head of the list */
 
-  struct list_elem *e = list_head (&wait_list);
-  int max_priority = 0;
+/* Loop to iterate through the list and find which ticks to unblock and 
+remove from the list */
   while ((e = list_next (e)) != list_end (&wait_list)) {
     struct thread *pThread = list_entry(e, struct thread, sleep_elem);
     if(pThread->wake_tick <= ticks) {
