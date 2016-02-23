@@ -8,8 +8,8 @@
 
 >> Fill in the names and email addresses of your group members.
 
-Vineeth Sepaha <netid@scarletmail.rutgers.edu>
-Kevin Wu <netid@scarletmail.rutgers.edu>
+Vineeth Sepaha <vs381@scarletmail.rutgers.edu>
+Kevin Wu <kw346@scarletmail.rutgers.edu>
 Prit Modi <pmm176@scarletmail.rutgers.edu>
 
                         ---- PRELIMINARIES ----
@@ -32,93 +32,20 @@ Prit Modi <pmm176@scarletmail.rutgers.edu>
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
 ***
+In timer.c:
+  static struct list wait_list;
 
-static struct list wait_list;
-
-***
-
-static int64_t ticks;
-
-***
-
-timer_sleep (int64_t ticks) 
-{
-  int64_t start = timer_ticks ();
-  ASSERT (intr_get_level () == INTR_ON);
-
-  enum intr_level old_level = intr_disable();
- 
-  struct thread* t = thread_current(); 
-  t -> wake_tick = start + ticks;
-  list_insert_ordered(&wait_list, & t->sleep_elem, least_sleep, NULL);
- 
-  thread_block(); 
-  intr_set_level(old_level);
-}
+We implemented this wait_list because we needed this type of data structure
+to store our blocked threads.
 
 ***
+In threads.h:
+struct list_elem sleep_elem;
 
-timer_interrupt (struct intr_frame *args UNUSED)
-{
-  ticks++;
-  thread_tick ();
-
-  if(list_empty(&wait_list)) 
-    return;
-
-  struct list_elem *a = list_front(&wait_list);
-  struct thread *pThread = list_entry(a, struct thread, sleep_elem);
-
-  struct list_elem *e = list_head (&wait_list);
-  int max_priority = 0;
-  while ((e = list_next (e)) != list_end (&wait_list)) {
-    struct thread *pThread = list_entry(e, struct thread, sleep_elem);
-    if(pThread->wake_tick <= ticks) {
-	list_pop_front(&wait_list);
-        thread_unblock(pThread);
-	e = list_head (&wait_list);
-    } else
-	break;
-  }
-}
+We used the structure of list_elem so we would be able to store the threads
+as elements and push those elements onto the list.
 
 ***
-
-struct thread
-  {
-    /* Owned by thread.c. */
-    tid_t tid;                          /* Thread identifier. */
-    enum thread_status status;          /* Thread state. */
-    char name[16];                      /* Name (for debugging purposes). */
-    uint8_t *stack;                     /* Saved stack pointer. */
-    int priority;                       /* Priority. */
-    struct list_elem allelem;           /* List element for all threads list. */
-    int64_t wake_tick;			/* Indicates when thread will wake up. */
-
-    /* Shared between thread.c and synch.c. */
-    struct list_elem elem;              /* List element. */
-
-    /* Used to keep threads in sleep list */
-    struct list_elem sleep_elem;              /* List element. */
-
-#ifdef USERPROG
-    /* Owned by userprog/process.c. */
-    uint32_t *pagedir;                  /* Page directory. */
-#endif
-
-    /* Owned by thread.c. */
-    unsigned magic;                     /* Detects stack overflow. */
-  };
-
-***
-
-bool least_sleep(const struct list_elem *a, const struct list_elem *b, void *aux){
-	struct thread *a_thread;
-        struct thread *b_thread;
-	a_thread = list_entry(a, struct thread, sleep_elem);
-	b_thread = list_entry(b, struct thread, sleep_elem);
-	return (a_thread->wake_tick < b_thread->wake_tick);
-}
 
 ***************************************************************************
 
@@ -127,11 +54,12 @@ bool least_sleep(const struct list_elem *a, const struct list_elem *b, void *aux
 >> A2: Briefly describe what happens in a call to timer_sleep(),
 >> including the effects of the timer interrupt handler.
 
-In our design, we used a list to eliminate busy waiting. Everytime 
-timer_sleep() is called a thread is added to the list and then blocked. 
-In addition, during each interrupt our code checks if it's time for the 
-thread to wake up. So if the time is correct and thread is ready to be
-woken up, it removes the thread from the list along with unblocking it.
+In our design, we used a list to eliminate busy waiting. Every time 
+timer_sleep() is called a thread is added, in ascending order based 
+on wait time, to the list and then blocked. 
+In addition, during each interrupt our code iterates through the list to
+the wake time of each thread. If there are one or more threads ready to be 
+woken, all of those threads are removed from the list and unblocked.
 
 ***************************************************************************
 
