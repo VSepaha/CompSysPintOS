@@ -8,8 +8,8 @@
 
 >> Fill in the names and email addresses of your group members.
 
-Vineeth Sepaha <netid@scarletmail.rutgers.edu>
-Kevin Wu <netid@scarletmail.rutgers.edu>
+Vineeth Sepaha <vs381@scarletmail.rutgers.edu>
+Kevin Wu <kw346@scarletmail.rutgers.edu>
 Prit Modi <pmm176@scarletmail.rutgers.edu>
 
 ---- PRELIMINARIES ----
