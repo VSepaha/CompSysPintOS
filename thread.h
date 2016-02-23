@@ -143,5 +143,6 @@ int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
 bool least_sleep (const struct list_elem *, const struct list_elem *, void *);
+bool prio_detect (const struct list_elem *a, const struct list_elem *b, void *);
 
 #endif /* threads/thread.h */

@@ -135,8 +135,8 @@ thread_tick (void)
     kernel_ticks++;
 
   /* Enforce preemption. */
-  if (++thread_ticks >= TIME_SLICE)
-    intr_yield_on_return ();
+//  if (++thread_ticks >= TIME_SLICE)
+//    intr_yield_on_return ();
 }
 
 /* Prints thread statistics. */
@@ -245,8 +245,10 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_push_back (&ready_list, &t->elem);
+  //list_push_back (&ready_list, &t->elem);
+  list_insert_ordered (&ready_list, &t->elem, prio_detect, NULL);
   t->status = THREAD_READY;
+
   intr_set_level (old_level);
 }
 
@@ -316,7 +318,8 @@ thread_yield (void)
 
   old_level = intr_disable ();
   if (cur != idle_thread) 
-    list_push_back (&ready_list, &cur->elem);
+    //list_push_back (&ready_list, &cur->elem);
+    list_insert_ordered (&ready_list, &cur->elem, prio_detect, NULL);
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
@@ -571,10 +574,22 @@ schedule (void)
 /* Function created to compare the elements in the list and return true if 
 the wake_tick for thread a is less than that of thread b. Return false if 
 the opposite is true. */
-bool least_sleep(const struct list_elem *a, const struct list_elem *b, void *aux){
+bool 
+least_sleep(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED){
 	struct thread *a_thread = list_entry(a, struct thread, sleep_elem);
 	struct thread *b_thread = list_entry(b, struct thread, sleep_elem);
 	return (a_thread->wake_tick < b_thread->wake_tick);
+}
+
+/* Function created to compare the elements in the list and return true if 
+the priority for thread a is greater than that of thread b. Return false if 
+the opposite is true. */
+bool
+prio_detect (const struct list_elem *a_, const struct list_elem *b_, void *aux UNUSED)
+{
+	struct thread *a = list_entry (a_, struct thread, elem);
+	struct thread *b = list_entry (b_, struct thread, elem);
+	return (a->priority > b->priority);
 }
 
 /* Returns a tid to use for a new thread. */
