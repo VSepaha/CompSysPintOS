@@ -8,7 +8,7 @@
 
 >> Fill in the names and email addresses of your group members.
 
-Vineeth Sepaha <vs381@scarletmail.rutgers.edu>
+Vineet Sepaha <vs381@scarletmail.rutgers.edu>
 Kevin Wu <kw346@scarletmail.rutgers.edu>
 Prit Modi <pmm176@scarletmail.rutgers.edu>
 
@@ -56,9 +56,10 @@ as elements and push those elements onto the list.
 
 In our design, we used a list to eliminate busy waiting. Every time 
 timer_sleep() is called a thread is added, in ascending order based 
-on wait time, to the list and then blocked. 
-In addition, during each interrupt our code iterates through the list to
-the wake time of each thread. If there are one or more threads ready to be 
+on wake_tick, to the list and then blocked. 
+In addition, during each interrupt, our code iterates through the wait_list
+to find which threads are ready to be woken up based on their wake_tick in 
+comparison to the system time. If there are one or more threads ready to be 
 woken, all of those threads are removed from the list and unblocked.
 
 ***************************************************************************
@@ -68,7 +69,9 @@ woken, all of those threads are removed from the list and unblocked.
 >> A3: How are race conditions avoided when multiple threads call
 >> timer_sleep() simultaneously? 
 
-In order to accommodate for race conditions we disabled interupts within the timer_sleep function. 
+In order to accommodate for race conditions we disabled interupts within the 
+timer_sleep function. This helped to eliminate race conditions because it
+prevents any interrups from running. This prevents a thread from being preempted.
 
 
 ***************************************************************************
@@ -79,9 +82,12 @@ In order to accommodate for race conditions we disabled interupts within the tim
 >> A4: Why did you choose this design?  In what ways is it superior to
 >> another design you considered?
 
-The reason why we decided to choose this design is because it is easier to
-implement. Basically we used ordered list so that its more organized and it
-removes the ticks as its time for them to woke up.
+We chose this design because the concept was simple to understand.
+We originally planned on just pushing threads into a list and iterating 
+through the entire list. However, we realized that if we used an ordered list,
+then we would spend less time in timer_interrupt() since we would exit the
+iteration as soon we reach a thread whose wake_tick is greater than that of
+the system time.
 
 ***************************************************************************
 
