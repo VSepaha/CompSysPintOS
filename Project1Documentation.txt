@@ -68,10 +68,7 @@ woken, all of those threads are removed from the list and unblocked.
 >> A3: How are race conditions avoided when multiple threads call
 >> timer_sleep() simultaneously? 
 
-So when timer_sleep() is called simultaneously by multiple threads
-only one thread is obtained everytime it inserts in sleep list. Since ticks
-are added in order single one at a time, which means they are always woken
-up in the correct order thus eliminating the race conditions.
+In order to accommodate for race conditions we disabled interupts within the timer_sleep function. 
 
 
 ***************************************************************************
