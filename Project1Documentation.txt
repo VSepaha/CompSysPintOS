@@ -1,18 +1,18 @@
-+--------------------+
+                        +--------------------+
 			|       ECE 434      |
 			| PROJECT 1: THREADS |
 			|   DESIGN DOCUMENT  |
 			+--------------------+
 				   
----- GROUP ----
+                           ---- GROUP ----
 
 >> Fill in the names and email addresses of your group members.
 
-Vineeth Sepaha <vs381@scarletmail.rutgers.edu>
-Kevin Wu <kw346@scarletmail.rutgers.edu>
+Vineeth Sepaha <netid@scarletmail.rutgers.edu>
+Kevin Wu <netid@scarletmail.rutgers.edu>
 Prit Modi <pmm176@scarletmail.rutgers.edu>
 
----- PRELIMINARIES ----
+                        ---- PRELIMINARIES ----
 
 >> If you have any preliminary comments on your submission, notes for the
 >> TAs, please give them here.
@@ -25,18 +25,15 @@ Prit Modi <pmm176@scarletmail.rutgers.edu>
 			     ALARM CLOCK
 			     ===========
 
-
----- DATA STRUCTURES ----
+                      ---- DATA STRUCTURES ----
 
 >> A1: Copy here the declaration of each new or changed `struct' or
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
-
 ***
 
 static struct list wait_list;
-
 
 ***
 
@@ -113,30 +110,40 @@ struct thread
     unsigned magic;                     /* Detects stack overflow. */
   };
 
+***
+
+bool least_sleep(const struct list_elem *a, const struct list_elem *b, void *aux){
+	struct thread *a_thread;
+        struct thread *b_thread;
+	a_thread = list_entry(a, struct thread, sleep_elem);
+	b_thread = list_entry(b, struct thread, sleep_elem);
+	return (a_thread->wake_tick < b_thread->wake_tick);
+}
 
 ***************************************************************************
 
----- ALGORITHMS ----
+                          ---- ALGORITHMS ----
 
 >> A2: Briefly describe what happens in a call to timer_sleep(),
 >> including the effects of the timer interrupt handler.
 
-
-
-
-
+In our design, we used a list to eliminate busy waiting. Each everytime 
+timer_sleep() is called, a thread is added to the list and then blocked. 
+In addition, during each interrupt our code checks if it's time for the 
+thread to wake up. So if the time is correct and thread is ready to be
+woken up, it removes the thread from the list along with unblocking it.
 
 ***************************************************************************
 
-
-
----- SYNCHRONIZATION ----
+                       ---- SYNCHRONIZATION ----
 
 >> A3: How are race conditions avoided when multiple threads call
->> timer_sleep() simultaneously?
+>> timer_sleep() simultaneously? 
 
-
-
+So when timer_sleep() is called simultaneously by multriple threads,
+only one thread is obtained everytime it inserts in sleep list. Since, ticks
+are added in order single one at a time, which meaans they are always woken
+up in the correct order thus eliminating the race conditions.
 
 
 ***************************************************************************
@@ -147,9 +154,9 @@ struct thread
 >> A4: Why did you choose this design?  In what ways is it superior to
 >> another design you considered?
 
-
-
-
+The reason why we decided to choose this design is because it is easier to
+implement. Basically we used ordered list so that its more organized and it
+removes the ticks as its time for them to woke up.
 
 ***************************************************************************
 
