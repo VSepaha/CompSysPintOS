@@ -127,8 +127,8 @@ bool least_sleep(const struct list_elem *a, const struct list_elem *b, void *aux
 >> A2: Briefly describe what happens in a call to timer_sleep(),
 >> including the effects of the timer interrupt handler.
 
-In our design, we used a list to eliminate busy waiting. Each everytime 
-timer_sleep() is called, a thread is added to the list and then blocked. 
+In our design, we used a list to eliminate busy waiting. Everytime 
+timer_sleep() is called a thread is added to the list and then blocked. 
 In addition, during each interrupt our code checks if it's time for the 
 thread to wake up. So if the time is correct and thread is ready to be
 woken up, it removes the thread from the list along with unblocking it.
@@ -140,9 +140,9 @@ woken up, it removes the thread from the list along with unblocking it.
 >> A3: How are race conditions avoided when multiple threads call
 >> timer_sleep() simultaneously? 
 
-So when timer_sleep() is called simultaneously by multriple threads,
-only one thread is obtained everytime it inserts in sleep list. Since, ticks
-are added in order single one at a time, which meaans they are always woken
+So when timer_sleep() is called simultaneously by multiple threads
+only one thread is obtained everytime it inserts in sleep list. Since ticks
+are added in order single one at a time, which means they are always woken
 up in the correct order thus eliminating the race conditions.
 
 
