@@ -70,8 +70,10 @@ woken, all of those threads are removed from the list and unblocked.
 >> timer_sleep() simultaneously? 
 
 In order to accommodate for race conditions we disabled interupts within the 
-timer_sleep function. This helped to eliminate race conditions because it
-prevents any interrups from running. This prevents a thread from being preempted.
+timer_sleep function. This helped to eliminate race conditions due to the fact
+that as long as interrupts are disabled there is no concurrency. Without 
+concurrency present within the system, there's no possibility for race 
+conditions.
 
 
 ***************************************************************************
