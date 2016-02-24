@@ -17,6 +17,11 @@ Prit Modi <pmm176@scarletmail.rutgers.edu>
 >> If you have any preliminary comments on your submission, notes for the
 >> TAs, please give them here.
 
+To whomever it may concern,
+	Unfortunately we were unable to fully implement the priority scheduler. However,
+	we were able to create the necessary functions to implement our conceptual 
+	design.
+
 >> Please cite any offline or online sources you consulted while
 >> preparing your submission, other than the Pintos documentation, course
 >> text, lecture notes, and course staff.
@@ -52,8 +57,8 @@ as elements and push those elements onto the list.
 
 ***
 
-***************************************************************************
 
+***************************************************************************
                           ---- ALGORITHMS ----
 
 >> A2: Briefly describe what happens in a call to timer_sleep(),
@@ -176,6 +181,15 @@ assigned to the thread that is waiting for the lock.
 >> B5: Describe a potential race in thread_set_priority() and explain
 >> how your implementation avoids it.
 
+The interrupts are disabled within thread_set_priority(). This is due to the
+fact that the read and write functions are needed to update the current
+thread's priority. In addition, the interrupt handler cannot acquire locks
+so from a logical point of view it was only natural to do so.
+
+One example of a race condition would be the instance of a thread priority
+variable being updated to a new priority while the interrupt handler is attempting
+to write to the priority variable. Since these conflicting instances of write could
+alter the priority value it is a race condition.
 
 ***************************************************************************
 
@@ -183,6 +197,16 @@ assigned to the thread that is waiting for the lock.
 
 >> B6: Why did you choose this design?  In what ways is it superior to
 >> another design you considered?
+
+This design was chosen primarily due to the simplicity it of the concepts
+required to perform the task. After reading the documentation presented 
+for this portion of the project it was apparent what structs were needed
+and what functions needed to be implemented. The lists to hold the donations
+were the first thing discussed as it was a data structure already implemented
+and one we had a familiarity with due to the previous portion of this project.
+The functions we created were also quite simple in hindsight but took time and 
+resources to develop. Overall, our design is the simplest we could come up with 
+in order to accomplish the task given.
 
 ***************************************************************************
 
