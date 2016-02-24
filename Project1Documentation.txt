@@ -122,6 +122,19 @@ struct thread
 >> Use ASCII art to diagram a nested donation.  (Alternately, submit a
 >> .png file.)
 
+The data structure that was used to track priority donation was a list. The 
+list also has a list_elem implemented. The list_elem is used whenever a lock
+is acquired by a thread; whenever a thread is inserted into the donations 
+a list_elem is generated. In the instance when the original priority is given
+back to the thread, a peek towards the front of the donation list is made
+and is compared to the current threads priority. In the instance in which 
+the priority is higher then the current threads priority is set to it. This is
+because in that instance it essentialy translate to the thread having donated.
+In terms of handling the nested donation, the pointer of the current thread is 
+reassigned to the thread that is holding the lock; at the same time the thread 
+that is currently holding the lock is reassigned to the old current thread's
+lock that it is waiting for. This process repeats itself in a loop until either
+lock is null.
 ***************************************************************************
 
 ---- ALGORITHMS ----
