@@ -89,7 +89,7 @@ conditions.
 ***************************************************************************
 
 
----- RATIONALE ----
+			 ---- RATIONALE ----
 
 >> A4: Why did you choose this design?  In what ways is it superior to
 >> another design you considered?
