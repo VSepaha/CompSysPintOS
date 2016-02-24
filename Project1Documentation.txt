@@ -39,8 +39,13 @@ We implemented this wait_list because we needed this type of data structure
 to store our blocked threads.
 
 ***
-In threads.h:
-struct list_elem sleep_elem;
+In threads.h : 
+struct thread
+{
+	....
+	struct list_elem sleep_elem;
+	....
+}
 
 We used the structure of list_elem so we would be able to store the threads
 as elements and push those elements onto the list.
@@ -101,6 +106,17 @@ the system time.
 >> B1: Copy here the declaration of each new or changed `struct' or
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
+
+In thread.h :
+struct thread
+{
+	...
+	struct lock *wait_lock;
+	struct list donators;
+	struct list_elem donator_elem;
+	...
+}
+
 
 >> B2: Explain the data structure used to track priority donation.
 >> Use ASCII art to diagram a nested donation.  (Alternately, submit a
@@ -179,6 +195,10 @@ implement it successfully.
 >> Did you find that working on a particular part of the assignment gave
 >> you greater insight into some aspect of OS design?
 
+Despite the tremendous amount of time spent self-teaching the basic concepts
+needed to do this project, it did help our overall understanding of how
+operating systems are implemented in the kernel level
+
 >> Is there some particular fact or hint we should give students in
 >> future quarters to help them solve the problems?  Conversely, did you
 >> find any of our guidance to be misleading?
@@ -192,7 +212,7 @@ the concept down.
 >> Any other comments?
 
 Like mentioned earlier, TAs should hold a special recitation/office hour where they 
-go over basics of C language so its easier for students to implment the code once 
+go over basics of C language so its easier for students to implement the code once 
 they got the concepts down.
 
 
