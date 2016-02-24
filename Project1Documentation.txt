@@ -113,9 +113,31 @@ the system time.
 >> B3: How do you ensure that the highest priority thread waiting for
 >> a lock, semaphore, or condition variable wakes up first?
 
+In the case of condition variables, a list is implemented using a sorting
+function that compares the priorities of the semaphores involved. 
+After this is done, the highest priority is chosen as the thread to be 
+woken.
+
+In the case of semaphores and locks, the threads are inserted using
+the already implemented function "list_insert_ordered" (within list.c).
+As such, this guarantees that the highest priority thread is the top
+thread of the list. 
+
 >> B4: Describe the sequence of events when a call to lock_acquire()
 >> causes a priority donation.  How is nested donation handled?
 
+When a call to lock_acquire() different actions are taken depending 
+on if the thread has the lock. If the current thread has the lock it is
+added to the list of donations. If the lock's sempahore is called using and the value
+is the constant 0 then we have a function called that finds the lock
+that the current thread is blocked for. After this, the function
+peeks at the priority of the thread holding the lock. If that thread's
+priority is lower than the current thread's priority then that thread
+receives the current thread's priority value.
+
+In regards to handling of the nested donations, the pointer to the current
+thread is assigned to current thread that is holding the lock. This lock is then
+assigned to the thread that is waiting for the lock.
 
 ***************************************************************************
 
