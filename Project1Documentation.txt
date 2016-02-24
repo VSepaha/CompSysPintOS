@@ -169,6 +169,13 @@ the quarter.
 >> In your opinion, was this assignment, or any one of the three problems
 >> in it, too easy or too hard?  Did it take too long or too little time?
 
+The concept for Alarm clock was pretty simple but hard to implement since we
+were not familiar with the C language so implementing functions in the code
+took a while. As far as priority scheduling goes, it was a similar situation 
+but it was harder to grasp the concept espcially considering language unfamiliarity
+so most of the time went to learning the concept and language in order to 
+implement it successfully.
+
 >> Did you find that working on a particular part of the assignment gave
 >> you greater insight into some aspect of OS design?
 
@@ -176,9 +183,17 @@ the quarter.
 >> future quarters to help them solve the problems?  Conversely, did you
 >> find any of our guidance to be misleading?
 
+Not really, but it would be a good idea to give maybe a review session of C language
+so they do not really struggle with in terms of implementing once they have got 
+the concept down.
+
 >> Do you have any suggestions for the TAs to more effectively assist
 >> students, either for future quarters or the remaining projects?
 >> Any other comments?
+
+Like mentioned earlier, TAs should hold a special recitation/office hour where they 
+go over basics of C language so its easier for students to implment the code once 
+they got the concepts down.
 
 
 ***************************************************************************
