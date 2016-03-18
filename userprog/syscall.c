@@ -33,7 +33,7 @@ syscall_handler (struct intr_frame *f UNUSED)
   thread_exit ();
 }
 
-//TO DO: syscalls: create, remove, open, filesize
+//TO DO: syscalls: halt, exit, exec, wait, remove, open, filesize, read, write, seek, tell, close
 
 //NOTE: Global Variables "MAX_FILE_SIZE" and "MAX_FILE_NAME_LENGTH" must be defined
 bool
