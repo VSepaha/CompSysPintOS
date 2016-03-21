@@ -1,4 +1,3 @@
-
 #include "userprog/syscall.h"
 #include <stdio.h>
 #include <syscall-nr.h>
@@ -9,6 +8,8 @@
 #include "filesys/filesys.h"
 #include "filesys/files.h"
 #include "lib/kernel/list.h"
+
+#include "devices/input.h"
 /* End of header files added in */
 
 /* These Global variables were added in */
@@ -98,7 +99,7 @@ open (const char *file)
 
 		//if the file is not required to be removed,
 		//it can be opened.
-		lock_acquire(&fd_lock);
+		//lock_acquire(&fd_lock);
 		struct file *f = filesys_open(file);
 		if (f != NULL) {
 			uint32_t n_fd = global_fd++;
@@ -119,10 +120,10 @@ open (const char *file)
 				}
 			}
 
-			lock_release(&fd_lock);
+			//lock_release(&fd_lock);
 			return n_fd;
 		}
-		lock_release(&fd_lock);
+		//lock_release(&fd_lock);
 	}
 
 	return -1;
@@ -173,20 +174,56 @@ struct file* get_file_p(unsigned int fd) {
 	return NULL;
 }
 
+/* Reads size bytes from buffer to open file fd. Returns the 
+number of bytes actually read (0 at end of file), or -1 if the file
+couldn't be read. Fd 0 reads from the keyboard using input_getc().*/
+static int 
+read(int fd, void *buffer, unsigned size)
+{
+	//return value
+	int returnVal;
+	//declared 'offset' outside of for loop because of error in compliation
+	unsigned offset;
+
+	lock_acquire(&file_lock);
+	
+	//read syscall
+	if (fd == STDIN_FILENO){
+		//read each input 
+		for(offset = 0; offset < size; offset++){
+			//use uint8 because we are reading size bytes
+			*(uint8_t *)(buffer + offset) = input_getc();		
+		}
+		//make the return value equal to the size
+		returnVal = size;
+	} else {
+		returnVal = -1;
+	}
+	
+	lock_release(&file_lock);
+	return returnVal;
+}
+
+/* Writes size bytes from buffer to the open file fd. Returns the number of bytes actually
+written, which may be less than size if some bytes could not be written.
+Writing past end-of-file would normally extend the file, but file growth is not implemented
+by the basic file system. The expected behavior is to write as many bytes as
+possible up to end-of-file and return the actual number written, or 0 if no bytes could
+be written at all.
+Fd 1 writes to the console. Your code to write to the console should write all of buffer
+in one call to putbuf(), at least as long as size is not bigger than a few hundred
+bytes. (It is reasonable to break up larger buffers.) Otherwise, lines of text output
+by different processes may end up interleaved on the console, confusing both human
+readers and our grading scripts. */
+static int 
+write(int fd, const void *buffer, unsigned size){
+
+	//return value
+	int returnVal;
+
+}
+
+
 /* End of function added in */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
