@@ -6,7 +6,7 @@
 
 /* These header files were added in */
 #include "filesys/filesys.h"
-#include "filesys/files.h"
+#include "filesys/file.h"
 #include "lib/kernel/list.h"
 
 #include "devices/input.h"
@@ -16,11 +16,19 @@
 #define MAX_FILE_SIZE 204800
 #define MAX_FILE_NAME_LENGTH 64
 
-
-
+struct file* process_get_file (int fd);
+static struct lock LOCK;
 /* End of Global variables added in */
 
 static void syscall_handler (struct intr_frame *);
+
+/* Functions */
+static int read(int fd, void *buffer, unsigned size);
+static int write(int fd, const void *buffer, unsigned size);
+static bool create (const char *file, unsigned initial_size);
+static bool remove (const char *file);
+static int open (const char *file); 
+static int filesize (int fd);
 
 void
 syscall_init (void) 
@@ -38,7 +46,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 //TO DO: syscalls: halt, exit, exec, wait, remove, open, filesize, read, write, seek, tell, close
 
 //NOTE: Global Variables "MAX_FILE_SIZE" and "MAX_FILE_NAME_LENGTH" must be defined
-bool
+static bool
 create (const char *file, unsigned initial_size)
 {	
 	//Case 1: "initial_size" is lower than the limit
@@ -65,13 +73,13 @@ create (const char *file, unsigned initial_size)
 return false;
 }
 
-bool
+static bool
 remove (const char *file)
 {
 	return filesys_remove(file);
 }
 
-int 
+static int 
 open (const char *file) 
 {
 
@@ -129,7 +137,7 @@ open (const char *file)
 	return -1;
 }
 
-int
+static int
 filesize (int fd)
 {
 	struct file *f = get_file_p(fd);
@@ -185,7 +193,7 @@ read(int fd, void *buffer, unsigned size)
 	//declared 'offset' outside of for loop because of error in compliation
 	unsigned offset;
 
-	lock_acquire(&file_lock);
+	//lock_acquire(&LOCK);
 	
 	//read syscall
 	if (fd == STDIN_FILENO){
@@ -200,7 +208,7 @@ read(int fd, void *buffer, unsigned size)
 		returnVal = -1;
 	}
 	
-	lock_release(&file_lock);
+	//lock_release(&LOCK);
 	return returnVal;
 }
 
@@ -216,14 +224,31 @@ bytes. (It is reasonable to break up larger buffers.) Otherwise, lines of text o
 by different processes may end up interleaved on the console, confusing both human
 readers and our grading scripts. */
 static int 
-write(int fd, const void *buffer, unsigned size){
-
-	//return value
+write(int fd, const void *buffer, unsigned size)
+{
 	int returnVal;
+	//lock_acquire(&LOCK);
 
+	//write sycall
+	if (fd == STDOUT_FILENO) {
+		putbuf(buffer, size);
+		returnVal = size;
+		goto done;
+	}
+	
+	struct file *f = process_get_file(fd);
+	if (!f){
+		//lock_release(&LOCK);
+		returnVal = -1;
+	} else {
+		returnVal = file_write(f, buffer, size);
+	}
+	//lock_release(&LOCK);
+	
+	done:
+	  return returnVal;
 }
 
 
 /* End of function added in */
-
 
