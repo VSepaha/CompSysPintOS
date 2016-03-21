@@ -1,3 +1,4 @@
+
 #include "userprog/syscall.h"
 #include <stdio.h>
 #include <syscall-nr.h>
@@ -66,20 +67,113 @@ return false;
 bool
 remove (const char *file)
 {
-return true;
+	return filesys_remove(file);
 }
 
-int
-open (const char *file)
+int 
+open (const char *file) 
 {
-return true;
+
+	if (strlen(file) == 0) {
+//		printf("File open failed because file name can not be empty!\n");
+		;
+	} else {
+
+		//if the file is required to be removed,
+		//it is invisible for opening operation.
+
+		struct list_elem *rfe = list_begin(&removing_list);
+
+//		printf("rfe == NULL ? %d\n", rfe==NULL);
+//		printf("removing list size = %d\n", list_size(&removing_list));
+
+		while(rfe != list_end(&removing_list)) {
+			struct list_elem *tmprfe = rfe;
+			rfe = list_next(rfe);
+			struct removing_file *rf = list_entry(tmprfe, struct removing_file, r_elem);
+			if (strcmp(rf->file_name, file) == 0) {
+				return -1;
+			}
+		}
+
+		//if the file is not required to be removed,
+		//it can be opened.
+		lock_acquire(&fd_lock);
+		struct file *f = filesys_open(file);
+		if (f != NULL) {
+			uint32_t n_fd = global_fd++;
+
+			//fd == 1 screen
+			//fd == 0 keyboard
+			//fd >= 2 file
+			if (n_fd >= 2) {
+				struct list *fd_list = thread_add_fd(thread_current(), n_fd, f, file);
+//				printf("fd_list size = %d\n", list_size(fd_list));
+				if (fd_list != NULL) {
+					if (list_size(fd_list) == 1) {
+						struct fds_stub *fdss = malloc(sizeof(struct fds_stub));
+						fdss->l = fd_list;
+						list_push_back(&fds_ll, &fdss->fds_elem);
+//						printf("fds_ll_size = %d\n", list_size(&fds_ll));
+					}
+				}
+			}
+
+			lock_release(&fd_lock);
+			return n_fd;
+		}
+		lock_release(&fd_lock);
+	}
+
+	return -1;
 }
 
 int
 filesize (int fd)
 {
-return true;
+	struct file *f = get_file_p(fd);
+	if (f != NULL){
+		return file_length(f);
+	}
 }
+
+/* The following function was added in */
+
+//This function is used to get the pointer of the file structure
+struct file* get_file_p(unsigned int fd) {
+
+	if (fd == 1 || fd == 0) {
+		//Cannot get the file structure pointer if fd is either 0 or 1...
+		return NULL;
+	}
+
+	struct list_elem *le = list_begin(&fds_ll);
+	while(le != list_end(&fds_ll)) {
+		struct list_elem *tmp = le;
+		le = list_next(le);
+		struct fds_stub *fdss = list_entry(tmp, struct fds_stub, fds_elem);
+		if (fdss != NULL) {
+			struct list * fd_list = fdss->l;
+			if (fd_list != NULL) {
+				struct list_elem *fd_le = list_begin(fd_list);
+				while(fd_le != list_end(fd_list)) {
+					struct list_elem *tmp_fd_le = fd_le;
+					fd_le = list_next(fd_le);
+					struct fd_elem *fde = list_entry(tmp_fd_le, struct fd_elem, fdl_elem);
+					if (fde != NULL) {
+						if (fde->fd == fd) {
+
+							return fde->f;
+						}
+					}
+				}
+			}
+		}
+	}
+	return NULL;
+}
+
+/* End of function added in */
 
 
 
