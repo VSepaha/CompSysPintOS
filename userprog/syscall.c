@@ -10,6 +10,8 @@
 #include "lib/kernel/list.h"
 #include "threads/synch.h"
 
+#include <string.h>
+#include "threads/malloc.h"
 #include "devices/input.h"
 /* End of header files added in */
 
@@ -328,13 +330,15 @@ tell(int fd)
 void arg_get (struct intr_frame *f, int *arg, int n)
 {
 	int *ptr;
-	for (int i = 0; i < n; i++)
+	int i;
+	for (i = 0; i < n; i++)
 	{
 		ptr = (int *) f->esp + i + 1;
 		arg[i] = *ptr;
 	}
 }
 
+//NOTE: These two functions will NOT work if threads.c isnt edited
 int process_file_add (struct file *f)
 {
 	struct process_file *pf = malloc(sizeof(struct process_file));
