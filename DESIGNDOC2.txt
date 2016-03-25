@@ -18,29 +18,53 @@ Prit Modi pmm176@scarletmail.ruters.edu
 >> If you have any preliminary comments on your submission, notes for the
 >> TAs, or extra credit, please give them here.
 
+		    ---Work Division----
+
+Vineet Sepaha:
+- Process Termination Messages (50%)
+- Argument Passing
+- System calls: read(), write(), seek(), tell()
+- Allowing/Denying writes to executables
+
+Kevin Wu:
+- Process Termination Messages (50%)
+- System calls: create(), remove(), open(), filesize(), (close, exit)
+- syscall_handler()
+- Worked on merging the system calls into syscall.c
+and fixed errors received from doing so.
+
+Prit Modi:
+- System calls: halt(), exec(), wait() (exit, close)
+- Synchronization between parent and child
+
 >> Please cite any offline or online sources you consulted while
 >> preparing your submission, other than the Pintos documentation, course
 >> text, lecture notes, and course staff.
+
 - http://www.scs.stanford.edu/10wi-cs140/labs/10wi-proj2.pdf
 - http://courses.cs.vt.edu/~cs3204/fall2009/pintos-vt-local/Project2Session.pdf
 
 			   ARGUMENT PASSING
 			   ================
-(Vineet)
+(Vineet - Done)
 ---- DATA STRUCTURES ----
 
 >> A1: Copy here the declaration of each new or changed `struct' or
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
+In process.c:
+    static void get_args(char * cmd_string, char* argv[], int *argc)
+/* The purpose of this function was to implement string parsing */
+
 ---- ALGORITHMS ---- (Done)
 
 >> A2: Briefly describe how you implemented argument parsing.  How do
 >> you arrange for the elements of argv[] to be in the right order?
 
-One of the most important things to do for argument passing was to setup 
+    One of the most important things to do for argument passing was to setup 
 the stack. We implemented the stack in setup_stack().
-	In our implementation, we first start out with process_execute() which is used
+    In our implementation, we first start out with process_execute() which is used
 for calling start_process(). This function is then used to call the load() function.
 The load() function is responsible for implementing parsing to the command line 
 string which it is passed. The load function calls a function which we created called
@@ -50,7 +74,7 @@ argv[] and also place the number of arguments into a variable called argc. In th
 function we read the arguments left to right into argv[] (However, when we later pushed them
 onto the stack, they were pushed in from right to left). After get_args() was implemented,
 we return to the load() function and call setup_stack().
-	As previously mentioned, this is where we pushed the arguments onto the stack. The 
+    As previously mentioned, this is where we pushed the arguments onto the stack. The 
 first thing we did was allocate memory for the stack by using realloc(). Next, we pushed the
 arguments in the reverse orderon to the stack. After this is done we implement a word align 
 to optimize the stack. Then we pushed in a sentinel value of zero onto the stack so
