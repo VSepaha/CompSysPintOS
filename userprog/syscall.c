@@ -62,6 +62,7 @@ static int open (const char *file);
 static int filesize (int fd);
 static void seek(int fd, unsigned position);
 static unsigned tell(int fd);
+//static int close(struct intr_frame *f)
 
 void
 syscall_init (void) 
@@ -72,8 +73,8 @@ syscall_init (void)
 static void
 syscall_handler (struct intr_frame *f UNUSED) 
 {
-	/*int arg[MAX_ARGS];
-	switch (* (int *) f-> esp);
+	int arg[MAX_ARGS];
+	switch (* (int *) f-> esp)
 	{
 		case SYS_HALT:
 		{
@@ -91,8 +92,6 @@ syscall_handler (struct intr_frame *f UNUSED)
 		case SYS_EXEC:
 		{
 			arg_get(f, &arg[0], 1);
-			//If the following line is needed, user_to_kernel_ptr needs to be implemented
-			//arg[0] = user_to_kernel_ptr((const void *) arg[0]);
 			f -> eax = exec((const char *) arg[0]);
 			break;
 		}
@@ -135,9 +134,7 @@ syscall_handler (struct intr_frame *f UNUSED)
 		case SYS_READ:
 		{
 			arg_get(f, &arg[0], 1);
-			//INSPIRED LINE...
-			//arg[1] = user_to_kernel_ptr((const void *) arg[1]);
-			//f -> eax = read(arg[0], (void *) arg[1], (unsigned) arg[2]);
+			f -> eax = read(arg[0], (void *) arg[1], (unsigned) arg[2]);
 			break;
 		}
 
@@ -155,19 +152,20 @@ syscall_handler (struct intr_frame *f UNUSED)
 			break;
 		}
 
-		case SYS_CLOSE:
+		/*case SYS_CLOSE:
 		{
 			arg_get(f, &arg[0], 1);
 			close(arg[0]);
 			break;
-		}
+		}*/
 
-	}*/
+	}
 
   //This was originally here
+  /*
   printf ("system call!\n");
   thread_exit ();
-  
+  */
 }
 
 static void
@@ -177,7 +175,7 @@ halt(void){
 
 static void
 exit(int status){
-  thread_kill(status); //Terminates the current user program and returns the current status to the kernel
+  //thread_kill(status); //Terminates the current user program and returns the current status to the kernel
 }
 
 static pid_t
@@ -396,5 +394,38 @@ struct file* process_file_get (int fd)
 return NULL;
 
 }
+/*
+static int
+findUser (const uint8_t *uaddr)
+{
+  if(!is_user_vaddr(uaddr))
+    return -1;
+  int result;
+  asm ("movl $1f, %0; movzbl %1, %0; 1:"
+       : "=&a" (result) : "m" (*uaddr));
+  return result;
+}
+
+static bool pointerValid(void * esp, uint8_t argc){
+  uint8_t i = 0;
+  for (; i < argc; ++i)
+  {
+    if (findUser(((uint8_t *)esp)+i) == -1){
+      return false;
+    }
+  }
+  return true;
+}
+
+static int
+close(struct intr_frame *f)
+{
+  if (!pointerValid(f->esp +4, 4)){
+    return -1;
+  }
+  int fd = *(int *)(f->esp + 4);
+  process_kill(fd);
+  return 0;
+}*/
 
 /* End of function added in */

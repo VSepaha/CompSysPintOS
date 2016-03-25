@@ -9,5 +9,5 @@ Syscalls
 --------------------------------------------
 Update 3/24/2016
 
-All syscall functions are implemented.
+All syscall functions are implemented EXCEPT "close".
 syscall handler needs to be fixed.
