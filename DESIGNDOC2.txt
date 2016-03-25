@@ -8,9 +8,9 @@
 
 >> Fill in the names and email addresses of your group members.
 
-FirstName LastName <email@domain.example>
-FirstName LastName <email@domain.example>
-FirstName LastName <email@domain.example>
+Vineet Sepaha vs381@scarletmail.rutgers.edu
+Kevin Wu kw346@scarletmail.rutgers.edu
+Prit Modi pmm176@scarletmail.ruters.edu
 
 
 ---- PRELIMINARIES ----
@@ -21,10 +21,12 @@ FirstName LastName <email@domain.example>
 >> Please cite any offline or online sources you consulted while
 >> preparing your submission, other than the Pintos documentation, course
 >> text, lecture notes, and course staff.
+- http://www.scs.stanford.edu/10wi-cs140/labs/10wi-proj2.pdf
+- http://courses.cs.vt.edu/~cs3204/fall2009/pintos-vt-local/Project2Session.pdf
 
 			   ARGUMENT PASSING
 			   ================
-
+(Vineet)
 ---- DATA STRUCTURES ----
 
 >> A1: Copy here the declaration of each new or changed `struct' or
@@ -48,6 +50,7 @@ FirstName LastName <email@domain.example>
 			     ============
 
 ---- DATA STRUCTURES ----
+(We each work on what we added/changed)
 
 >> B1: Copy here the declaration of each new or changed `struct' or
 >> `struct' member, global or static variable, `typedef', or
@@ -59,9 +62,11 @@ FirstName LastName <email@domain.example>
 
 ---- ALGORITHMS ----
 
+(Vineet)
 >> B3: Describe your code for reading and writing user data from the
 >> kernel.
 
+(Kevin)
 >> B4: Suppose a system call causes a full page (4,096 bytes) of data
 >> to be copied from user space into the kernel.  What is the least
 >> and the greatest possible number of inspections of the page table
@@ -69,8 +74,10 @@ FirstName LastName <email@domain.example>
 >> for a system call that only copies 2 bytes of data?  Is there room
 >> for improvement in these numbers, and how much?
 
+(Prit)
 >> B5: Briefly describe your implementation of the "wait" system call.
 
+(Kevin)
 >> B6: Any access to user program memory at a user-specified address
 >> can fail due to a bad pointer value.  Such accesses must cause the
 >> process to be terminated.  System calls are fraught with such
@@ -87,10 +94,12 @@ FirstName LastName <email@domain.example>
 
 ---- SYNCHRONIZATION ----
 
+(Prit)
 >> B7: The "exec" system call returns -1 if loading the new executable
 >> fails, so it cannot return before the new executable has completed
 >> loading.  How does your code ensure this?
 
+(?)
 >> B8: Consider parent process P with child process C.  How do you
 >> ensure proper synchronization and avoid race conditions when P
 >> calls wait(C) before C exits?  After C exits?  How do you ensure
@@ -98,7 +107,7 @@ FirstName LastName <email@domain.example>
 >> terminates without waiting, before C exits?  After C exits?  Are
 >> there any special cases?
 
----- RATIONALE ----
+---- RATIONALE ---- (Teamwork)
 
 >> B9: Why did you choose to implement access to user memory from the
 >> kernel in the way that you did?
