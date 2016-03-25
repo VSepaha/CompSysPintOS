@@ -62,6 +62,7 @@ static void syscall_handler (struct intr_frame *);
 int process_file_add (struct file *f);
 struct file* process_file_get( int fd);
 void arg_get (struct intr_frame *f, int *arg, int n);
+static bool validaddr (const void * validaddr, unsigned size);
 
 /* End of elements aded in     */
 
@@ -157,6 +158,13 @@ syscall_handler (struct intr_frame *f UNUSED)
 		case SYS_WRITE:
 		{
 			arg_get(f, &arg[0], 1);
+			write(arg[0], (const void *) arg[1], (unsigned) arg[2]);
+			break;
+		}
+
+		case SYS_SEEK:
+		{
+			arg_get(f, &arg[0], 1);
 			seek(arg[0], (unsigned) arg[1]);
 			break;
 		}
@@ -198,6 +206,12 @@ exit(int status){
 
 static pid_t
 exec(const char *file_name){
+  //Check address
+  if(!validaddr (file_name,0) || !validaddr(file_name, strlen(file_name))) 
+  {
+  	thread_exit();
+  }
+
   return process_execute (file_name); //Runs the executable whose name is given, passing any arguments and returns the new process's pid
 }
 
@@ -210,6 +224,12 @@ wait(pid_t pid){
 static bool
 create (const char *file, unsigned initial_size)
 {	
+  //Check address
+  if(!validaddr (file, 0) || !validaddr(file, strlen(file))) 
+  {
+  	thread_exit();
+  }
+
 	lock_acquire(&LOCK);
 
 	//Case 1: "initial_size" is lower than the limit
@@ -241,6 +261,12 @@ return false;
 static bool
 remove (const char *file)
 {	
+  //Check address
+  if(!validaddr (file,0) || !validaddr(file, strlen(file))) 
+  {
+  	thread_exit();
+  }
+
 	lock_acquire(&LOCK);
 	bool file_removed = filesys_remove(file);
 	lock_release(&LOCK);
@@ -250,6 +276,13 @@ remove (const char *file)
 static int 
 open (const char *file) 
 {
+  //Check address
+  if(!validaddr (file,0) || !validaddr(file, strlen(file))) 
+  {
+  	thread_exit();
+  }
+
+
 	lock_acquire(&LOCK);
 	if (strlen(file) == 0) {
 		printf("File open failed because file name can not be empty!\n");
@@ -292,7 +325,13 @@ number of bytes actually read (0 at end of file), or -1 if the file
 couldn't be read. Fd 0 reads from the keyboard using input_getc().*/
 static int 
 read(int fd, void *buffer, unsigned size)
-{
+{	
+
+  //Check address
+  if(!validaddr (buffer,size)) 
+  {
+  	thread_exit();
+  }
 	//return value
 	int returnVal;
 	//declared 'offset' outside of for loop because of error in compliation
@@ -321,6 +360,11 @@ read(int fd, void *buffer, unsigned size)
 static int 
 write(int fd, const void *buffer, unsigned size)
 {
+  //Check address
+  if(!validaddr (buffer,size)) 
+  {
+  	thread_exit();
+  }
 	int returnVal;
 	lock_acquire(&LOCK);
 
@@ -445,5 +489,23 @@ close(struct intr_frame *f)
   process_kill(fd);
   return 0;
 }*/
+
+/* The following function is used to check valid virtual address for pointers */
+
+static bool
+validaddr (const void * validaddr, unsigned size)
+{
+	//is_user_vaddr is a built in function in /threads/vaddr.h
+	if(!is_user_vaddr (validaddr + size))
+	{
+		return false;
+	}
+
+return true;
+
+}
+
+/* End of added in function */
+
 
 /* End of function added in */
