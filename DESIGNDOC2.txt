@@ -38,13 +38,26 @@ Prit Modi pmm176@scarletmail.ruters.edu
 >> A2: Briefly describe how you implemented argument parsing.  How do
 >> you arrange for the elements of argv[] to be in the right order?
 
----- RATIONALE ----
+---- RATIONALE ---- (Done)
 
 >> A3: Why does Pintos implement strtok_r() but not strtok()?
+
+    Pintos implements strtok_r() instead of strtok() because strtok() skips over the first 
+argument in while parsing the string. The strtok_r() function however, returns a pointer
+to the first arguments(token). When there are no more tokens remaining, it returns a null pointer.
+This is what we needed in order for argument passing to work successfully.
 
 >> A4: In Pintos, the kernel separates commands into a executable name
 >> and arguments.  In Unix-like systems, the shell does this
 >> separation.  Identify at least two advantages of the Unix approach.
+
+    One of the advantages of the Unix approach is that less time is spent in the 
+kernel. The advantage of this is that it is every expensive to run in kernel mode 
+and if a problem occurs while in kernel mode, the entire PC will halt.
+    The second advantage of the Unix approach is that it is much safer to use 
+shell parsing operations. This is because the shell would be able to check for  
+an unsafe command line before it goes to the kernel. This will prevent errors
+from occuring in the kernel.
 
 			     SYSTEM CALLS
 			     ============
