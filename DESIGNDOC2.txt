@@ -172,6 +172,27 @@ there wouldn't be a need for any inspections.
 >> paragraphs, describe the strategy or strategies you adopted for
 >> managing these issues.  Give an example.
 
+Within our implementation, our primary method of dealing with
+bad pointers is by using the function we created, validaddr().
+Before any of the system calls can even begin, we check the
+address of the pointer and makes sure it is valid before we
+proceed. As such, we essentially prevent bad pointers from
+ever having any interaction with our system calls. Thus,
+there is no obscurity towards the primary function of code and
+no temporarily allocated resources are used.
+
+Example:
+	
+	system call exec is made
+
+	The syscall handler passes in the arguments respectively.
+	The function exec is called upon with the passed 
+	arguments. Before any execution of code is performed,
+	the function validaddr() is executed to check for valid
+	pointer address. If it is a bad pointer, thread_exit() is
+	called. If it isn't a bad pointer, the function continues 
+	normally.
+
 ---- SYNCHRONIZATION ----
 
 (Prit)
