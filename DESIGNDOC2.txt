@@ -87,6 +87,26 @@ from occuring in the kernel.
 >> for a system call that only copies 2 bytes of data?  Is there room
 >> for improvement in these numbers, and how much?
 
+Within our implementation, the maximum size of a page is exactly
+4,096 bytes. Thus, if a system call that creates a full page and
+is copied there would be in total 2 full pages. As such, the maximum possible number of inspections would be 2. The least 
+possible number of inspections would be 1. 
+
+In the use case of a system call only copying 2 bytes of data,
+it is the same as previous, with maximum possible inspections
+being 2 and minimum possible inspections at 1. The only slight
+difference is that the possibility of needing 2 inspections
+is much lower than the previous use case.
+
+A possible way to improve upon these numbers is to simply
+remove checking the addresses for read and write. If this
+is the case, the system calls would continue untill an
+error, like page fault, occurs. In such an instance, 
+the interrupt handler would be implemented in such a manner
+that is would handle these errors appropriately. As such,
+there wouldn't be a need for any inspections. 
+
+
 (Prit)
 >> B5: Briefly describe your implementation of the "wait" system call.
 

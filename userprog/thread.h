@@ -96,15 +96,17 @@ struct thread
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+     	struct file *exec;                  /* File with thread executable */
+	/* The following was added in */
+  		struct list file_list;
+  		int fd;
+	/* End of elements added in   */
 #endif
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
 
-/* The following was added in */
-struct list file_list;
-int fd;
-/* End of elements added in   */
+
 
   };
 

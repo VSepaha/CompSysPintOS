@@ -26,7 +26,7 @@
 /* These Global variables were added in */
 #define MAX_FILE_SIZE 204800
 #define MAX_FILE_NAME_LENGTH 64
-#define MAX_ARGS 5
+#define MAX_ARGS 10
 
 struct file* file_check(int fd);
 static struct lock LOCK;
@@ -38,6 +38,22 @@ struct process_file
 	int fd;
 	struct list_elem elem;
 };
+
+struct file* file_check (int fd)
+{
+  struct thread *cur = thread_current();
+  struct list_elem *e =  list_head (&cur->file_list);
+
+  while ((e = list_next (e)) != list_end (&cur->file_list)){
+    struct process_file *pf = list_entry (e, struct process_file, elem);
+    if (fd == pf->fd) {
+	  return pf->file;
+	}
+    e = list_next(e);
+  }
+
+  return NULL;
+}
 /* End of Global variables added in */
 
 static void syscall_handler (struct intr_frame *);
@@ -176,6 +192,8 @@ halt(void){
 static void
 exit(int status){
   //thread_kill(status); //Terminates the current user program and returns the current status to the kernel
+  status = 0;
+  return;
 }
 
 static pid_t
