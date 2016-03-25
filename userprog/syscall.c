@@ -13,6 +13,14 @@
 #include <string.h>
 #include "threads/malloc.h"
 #include "devices/input.h"
+
+#include "threads/init.h"
+#include "devices/shutdown.h"
+#include "threads/vaddr.h"
+#include "threads/pte.h"
+#include "userprog/process.h"
+#include "userprog/pagedir.h"
+
 /* End of header files added in */
 
 /* These Global variables were added in */
@@ -22,6 +30,7 @@
 
 struct file* file_check(int fd);
 static struct lock LOCK;
+typedef int pid_t;
 
 struct process_file
 {
@@ -41,6 +50,10 @@ void arg_get (struct intr_frame *f, int *arg, int n);
 /* End of elements aded in     */
 
 /* Functions */
+static void halt (void);
+static void exit (int status);
+static pid_t exec (const char *file_name);
+static int wait (pid_t pid);
 static int read(int fd, void *buffer, unsigned size);
 static int write(int fd, const void *buffer, unsigned size);
 static bool create (const char *file, unsigned initial_size);
@@ -157,7 +170,25 @@ syscall_handler (struct intr_frame *f UNUSED)
   
 }
 
-//TO DO: syscalls: halt, exit, exec, wait, remove, open, filesize, read, write, seek, tell, close
+static void
+halt(void){
+  shutdown(); //Terminates Pintos by calling shutdown() function
+}
+
+static void
+exit(int status){
+  thread_kill(status); //Terminates the current user program and returns the current status to the kernel
+}
+
+static pid_t
+exec(const char *file_name){
+  return process_execute (file_name); //Runs the executable whose name is given, passing any arguments and returns the new process's pid
+}
+
+static int 
+wait(pid_t pid){
+   return process_wait(pid); //Waits for a child process retrievs the child's exit status
+}
 
 //NOTE: Global Variables "MAX_FILE_SIZE" and "MAX_FILE_NAME_LENGTH" must be defined
 static bool
