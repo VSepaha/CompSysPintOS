@@ -200,8 +200,12 @@ halt(void){
 static void
 exit(int status){
   //thread_kill(status); //Terminates the current user program and returns the current status to the kernel
-  status = 0;
-  return;
+  //status = 0;
+  /*
+  struct thread *cur = thread_current();
+  status = THREAD_DYING;
+  cur -> status = status;
+  */
 }
 
 static pid_t

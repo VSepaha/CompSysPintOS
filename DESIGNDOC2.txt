@@ -57,6 +57,8 @@ In process.c:
     static void get_args(char * cmd_string, char* argv[], int *argc)
 /* The purpose of this function was to implement string parsing */
 
+
+
 ---- ALGORITHMS ---- (Done)
 
 >> A2: Briefly describe how you implemented argument parsing.  How do
@@ -114,6 +116,36 @@ from occuring in the kernel.
 >> B1: Copy here the declaration of each new or changed `struct' or
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
+
+
+//VINEET COMMENT THIS SHIT PLEASE
+struct file* file_check(int fd);
+
+struct file* file_check (int fd)
+{
+  struct thread *cur = thread_current();
+  struct list_elem *e =  list_head (&cur->file_list);
+
+  while ((e = list_next (e)) != list_end (&cur->file_list)){
+    struct process_file *pf = list_entry (e, struct process_file, elem);
+    if (fd == pf->fd) {
+	  return pf->file;
+	}
+    e = list_next(e);
+  }
+
+  return NULL;
+}
+
+//NO MORE VINEET 
+
+static struct lock LOCK; 
+/* LOCK is implemented to prevent interrupts during the critical section of a system call */
+
+typedef int pid_t;
+/* To define certain parameters as threads */
+
+
 
 >> B2: Describe how file descriptors are associated with open files.
 >> Are file descriptors unique within the entire OS or just within a
