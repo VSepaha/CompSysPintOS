@@ -117,6 +117,14 @@ from occuring in the kernel.
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
+//Global Variables
+#define MAX_FILE_SIZE 204800 
+/* Maximum allowed limit for file size*/
+
+
+#define MAX_FILE_NAME_LENGTH 64
+
+#define MAX_ARGS 10
 
 //VINEET COMMENT THIS SHIT PLEASE
 struct file* file_check(int fd);
