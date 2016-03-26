@@ -185,9 +185,27 @@ struct list file_list;
 
 ---- ALGORITHMS ----
 
-(Vineet)
+(Vineet - Done)
 >> B3: Describe your code for reading and writing user data from the
 >> kernel.
+
+Read:
+	When read is called the first thing is to check to see if the address is valid.
+The next thing we do is aquire the lock since it is going to be reading from the file.
+Then we check to see if the file descriptor (fd) is equal to STDIN_FILENO. If it is 
+not equal, we set the return value to -1, release the lock and then return the return value. 
+If it is equal, then we iterate through and read each input. When this is successful, 
+we assign the return value to the size parameter, release the lock and then return.
+
+Write:
+	When write is called, the first thing we do is check to see if the address is valid.
+The next thing we do is aquire the lock since it is going to be writing. Then we check to
+see if the file descriptor (fd) is equal to STDOUT_FILENO. If it is not equal then we and
+the file_check did not work, then we set the return value to -1, release the lock and return
+the return value. If it is not equal and the file_check did work, then make the return value
+equal to file_write(file, buffer, size), release the lock and return the return value.
+If the file descriptor is equal to STDOUT_FILENO then we use putbuf() to print the content of
+the buffer to the console.
 
 (Kevin - Done)
 >> B4: Suppose a system call causes a full page (4,096 bytes) of data
