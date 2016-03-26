@@ -239,7 +239,7 @@ there wouldn't be a need for any inspections.
 (Prit)
 >> B5: Briefly describe your implementation of the "wait" system call.
 
-(Kevin)
+(Kevin - Done)
 >> B6: Any access to user program memory at a user-specified address
 >> can fail due to a bad pointer value.  Such accesses must cause the
 >> process to be terminated.  System calls are fraught with such
@@ -254,7 +254,7 @@ there wouldn't be a need for any inspections.
 >> paragraphs, describe the strategy or strategies you adopted for
 >> managing these issues.  Give an example.
 
-Within our implementation, our primary method of dealing with
+    Within our implementation, our primary method of dealing with
 bad pointers is by using the function we created, validaddr().
 Before any of the system calls can even begin, we check the
 address of the pointer and makes sure it is valid before we
@@ -290,14 +290,27 @@ Example:
 >> terminates without waiting, before C exits?  After C exits?  Are
 >> there any special cases?
 
----- RATIONALE ---- (Teamwork)
+---- RATIONALE ---- 
 
+(Kevin)
 >> B9: Why did you choose to implement access to user memory from the
 >> kernel in the way that you did?
 
+(Vineet)
 >> B10: What advantages or disadvantages can you see to your design
 >> for file descriptors?
 
+Advantages:
+  1) We are using the file descriptors to see which syscall is being called
+between read and write. The file descriptor helps us to check and see if it
+is valid for the function it is being used with.
+  2) Another advantage is that the struct thread space is less.
+Disadvantage:
+  1) One problem is that it consumes the the kernel space, if the user 
+program was to open a lot of file this would lead to a problem in the 
+kernel causing it to crash and halt the entire PC.
+ 
+ 
 			   SURVEY QUESTIONS
 			   ================
 
@@ -309,6 +322,9 @@ the quarter.
 
 >> In your opinion, was this assignment, or any one of the three problems
 >> in it, too easy or too hard?  Did it take too long or too little time?
+
+  In our opinion this assignment was very difficult and it took a very long
+time to finish the amount that we were able to finish.
 
 >> Did you find that working on a particular part of the assignment gave
 >> you greater insight into some aspect of OS design?
