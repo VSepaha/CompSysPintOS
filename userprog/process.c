@@ -18,11 +18,16 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 
+/* Added */
+#include "threads/malloc.h"
+
+#define DEFAULT_ARGV 2
+
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
 ////////////////////////ADDED Functions///////////////////////////////////////////
-static void get_args(char * cmd_string, char* argv[], int *agrc);
+static void get_args(char * cmd_string, char* argv[], int *argc);
 
 
 
@@ -58,6 +63,7 @@ start_process (void *file_name_)
   char *file_name = file_name_;
   struct intr_frame if_;
   bool success;
+  struct thread *cur;
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
@@ -65,11 +71,18 @@ start_process (void *file_name_)
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (file_name, &if_.eip, &if_.esp);
+  
+  
+   cur = thread_current();
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
-  if (!success) 
-    thread_exit ();
+  if (!success){ 
+    	thread_exit ();
+  } else {
+		cur->exec = filesys_open (file_name); 
+		file_deny_write (cur->exec); /* Deny the file write */
+  }
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
@@ -103,8 +116,11 @@ process_exit (void)
   struct thread *cur = thread_current ();
   uint32_t *pd;
 
-  ///////////////////////////////////Edited Here//////////////////////////////
+  ////////////////////////////////Termination messages//////////////////////////////
   //printf("%s: exit(%d)\n", cur->name, cur->return_status);
+
+  if (cur->exec != NULL)
+    file_allow_write (cur->exec);
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
@@ -458,6 +474,9 @@ setup_stack (void **esp, char* argv[], int argc)
 	    int params = argc;
 		uint32_t *array[argc];
 		
+		//allocating 4kb of data
+  		realloc(*esp, 4096);
+		
 		//push string parameters on the stack
 		for(params = argc; params != 0; params--){
 			//offset of the stack for each parameter
@@ -468,6 +487,12 @@ setup_stack (void **esp, char* argv[], int argc)
 			   bytes in the string and the null char */
 			memcpy(*esp, argv[params],strlen(argv[params])+1);	
 		}
+
+		//word align
+		if ((int)*esp%4 != 0){
+		    int offset = (int)*esp%4;
+		    *esp = *esp - offset;
+		} 
 
 		//offset stack and push the sentinel onto the stack
 		*esp = *esp - 4;

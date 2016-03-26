@@ -100,7 +100,7 @@ struct thread
 	struct file *exec;                  /* File with thread executable */
   	struct list file_list;
   	int fd;
-  	int status;
+  	int return_status;
 /* End of elements added in   */
 #endif
 
