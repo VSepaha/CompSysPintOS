@@ -1,4 +1,4 @@
- +--------------------------+
+                     +--------------------------+
        	       	     |		ECE 434		|
 		     | PROJECT 2: USER PROGRAMS	|
 		     | 	   DESIGN DOCUMENT     	|
@@ -117,10 +117,6 @@ from occuring in the kernel.
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
-
-//VINEET COMMENT THIS SHIT PLEASE
-struct file* file_check(int fd);
-
 struct file* file_check (int fd)
 {
   struct thread *cur = thread_current();
@@ -136,8 +132,9 @@ struct file* file_check (int fd)
 
   return NULL;
 }
-
-//NO MORE VINEET 
+/* The struct is used to be able to reference the file that is going to be 
+used. */
+ 
 
 static struct lock LOCK; 
 /* LOCK is implemented to prevent interrupts during the critical section of a system call */
@@ -232,7 +229,7 @@ Example:
 >> fails, so it cannot return before the new executable has completed
 >> loading.  How does your code ensure this?
 
-(?)
+(Prit)
 >> B8: Consider parent process P with child process C.  How do you
 >> ensure proper synchronization and avoid race conditions when P
 >> calls wait(C) before C exits?  After C exits?  How do you ensure
