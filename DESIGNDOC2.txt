@@ -236,8 +236,10 @@ that is would handle these errors appropriately. As such,
 there wouldn't be a need for any inspections. 
 
 
-(Prit)
+(Prit - Done)
 >> B5: Briefly describe your implementation of the "wait" system call.
+
+Basically our implementation of wait call keeps going through list of children in a loop looking for one of them to be dead. If it's dead, it cleans up the dead struct and returns the status if it exists. THen when it exits it replaces itself on it's parent's list of children with it's dead body. And then synchronization is achieved with a single lock per list of children.
 
 (Kevin - Done)
 >> B6: Any access to user program memory at a user-specified address
@@ -277,12 +279,14 @@ Example:
 
 ---- SYNCHRONIZATION ----
 
-(Prit)
+(Prit - Done)
 >> B7: The "exec" system call returns -1 if loading the new executable
 >> fails, so it cannot return before the new executable has completed
 >> loading.  How does your code ensure this?
 
-(Prit)
+If we were to do this using the child parent relationship method, we would have the parent record the child load status. Child can have access to the parent thread via a new parent id. By doing so, child thread can exit anytime and only one variable inside parent thread is enough. We can also implement a check system so when children load success/faulure, the child can have access to parent thread using the parent id and system sets the value. So before the parent creates the child thread, the parent will set the load status to 0 which is basically initializing. Then paret waits for load status to change in order to get access to the check system.
+
+(Prit - Done)
 >> B8: Consider parent process P with child process C.  How do you
 >> ensure proper synchronization and avoid race conditions when P
 >> calls wait(C) before C exits?  After C exits?  How do you ensure
@@ -290,11 +294,39 @@ Example:
 >> terminates without waiting, before C exits?  After C exits?  Are
 >> there any special cases?
 
+If we had more time we would implemented a simple lock on the list of children which can deal with almost all of the situations above. Lets call process "P" and child "C" so it is easier to understand.
+
+First if P calls wait(C) before C exits, P notices that C is still alive and spins. When C does ultimately exit, then it goes into the next case:
+
+If P calls wait(C) after C exits, P finds C and releases it.
+
+Our implementation would make sure that resources are realesed in an efficient manner. For ex, a thread is responsible for cleaning up its own struct. But a dead thread struct is always the parent's responsibility. Thus the parent just needs to make sure that a dead thread object is not created by a child after it's done cleaning up all of its dead children in preparation of it's own death. In order to do so, we would have to set the pointer of child's parent to null and children_lock would ensure its actually safe. However there is a key thing we cannot forget to implement that is children have to check that their parent pointer is not null both before and after getting parent's children lock.
+
+
 ---- RATIONALE ---- 
 
-(Kevin)
+(Kevin - Done)
 >> B9: Why did you choose to implement access to user memory from the
 >> kernel in the way that you did?
+
+Within our implementation, the main way to access user memory was 
+through our implemented function validaddr(). Before any type
+of memory access is allowed, validaddr() checkes the virtual 
+address and determines if it is larger than the built in 
+PHYS_BASE; if this is the case, the function returns false 
+and will immediately call thread_exit(). If the function
+returns true, then the system calls proceed accordingly..
+
+The primary reasoning behind choosing such a method of accessing
+memory was the concept of prevention before error occurs. 
+In other words, we valued stopping an error before it can even
+happen rather than fixing an error that results from unknown 
+circumstances. In this manner, there is no waste of valuable
+resources as the prevention method denies access to the rest 
+of the execution. In the situation where an error is detected
+when it occurs, computer resources are already being used
+and must be reallocated and freed; this is a tedious job and 
+avoiding such an issue was our main concern.
 
 (Vineet - Done)
 >> B10: What advantages or disadvantages can you see to your design
@@ -329,8 +361,13 @@ time to finish the amount that we were able to finish.
 >> Did you find that working on a particular part of the assignment gave
 >> you greater insight into some aspect of OS design?
 
+
 >> Is there some particular fact or hint we should give students in
 >> future quarters to help them solve the problems?  Conversely, did you
 >> find any of our guidance to be misleading?
 
+
+Not enough guidance to mislead.
+
 >> Any other comments?
+A dedicated lecture/office hour that teaches us the requirements and overall tasks needed would be greatly appreciated.
