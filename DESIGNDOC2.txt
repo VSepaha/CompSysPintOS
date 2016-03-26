@@ -22,8 +22,12 @@ For the system calls portion of this assignment, the assigned member (Prit Modi)
 whose task was to implement syscalls exit and close was unable to fulfill 
 his portion. The assigned member (Prit Modi) also did not contribute his portion
 for parent, child communication. 
+Secondly for argument passing, we were not able to properly identify what needed 
+to be done for a successful implementation and were unsure how we would test it
+because the procedure given to us was not running on the machine. Therefore, 
+argument passing is untested.
 
-		    ---Work Division----
+		        ---Work Division----
 
 Vineet Sepaha:
 - Process Termination Messages (50%)
@@ -39,7 +43,7 @@ Kevin Wu:
 and fixed errors received from doing so.
 
 Prit Modi:
-- System calls: halt(), exec(), wait().
+- System calls: halt(), exec(), wait()
 - Synchronization between parent and child
 
 >> Please cite any offline or online sources you consulted while
