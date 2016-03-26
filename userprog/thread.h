@@ -94,13 +94,14 @@ struct thread
     struct list_elem elem;              /* List element. */
 
 #ifdef USERPROG
-    /* Owned by userprog/process.c. */
+  /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
-     	struct file *exec;                  /* File with thread executable */
-	/* The following was added in */
-  		struct list file_list;
-  		int fd;
-	/* End of elements added in   */
+/* The following was added in */
+	struct file *exec;                  /* File with thread executable */
+  	struct list file_list;
+  	int fd;
+  	int status;
+/* End of elements added in   */
 #endif
 
     /* Owned by thread.c. */
