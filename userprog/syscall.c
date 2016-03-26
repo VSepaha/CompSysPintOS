@@ -383,6 +383,7 @@ write(int fd, const void *buffer, unsigned size)
 	if (!f){
 		lock_release(&LOCK);
 		returnVal = -1;
+		goto done;
 	} else {
 		returnVal = file_write(f, buffer, size);
 	}
