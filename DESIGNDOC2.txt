@@ -110,7 +110,6 @@ from occuring in the kernel.
 			     ============
 
 ---- DATA STRUCTURES ----
-(We each work on what we added/changed)
 
 >> B1: Copy here the declaration of each new or changed `struct' or
 >> `struct' member, global or static variable, `typedef', or
@@ -235,7 +234,12 @@ there wouldn't be a need for any inspections.
 
 >> B5: Briefly describe your implementation of the "wait" system call.
 
-Basically our implementation of wait call keeps going through list of children in a loop looking for one of them to be dead. If it's dead, it cleans up the dead struct and returns the status if it exists. THen when it exits it replaces itself on it's parent's list of children with it's dead body. And then synchronization is achieved with a single lock per list of children.
+Basically our implementation of wait call keeps going through list of 
+children in a loop looking for one of them to be dead. If it's dead,
+ it cleans up the dead struct and returns the status if it exists. 
+ Then when it exits it replaces itself on it's parent's list of 
+ children with it's dead body. And then synchronization is achieved 
+ with a single lock per list of children.
 
 >> B6: Any access to user program memory at a user-specified address
 >> can fail due to a bad pointer value.  Such accesses must cause the
@@ -278,7 +282,16 @@ Example:
 >> fails, so it cannot return before the new executable has completed
 >> loading.  How does your code ensure this?
 
-If we were to do this using the child parent relationship method, we would have the parent record the child load status. Child can have access to the parent thread via a new parent id. By doing so, child thread can exit anytime and only one variable inside parent thread is enough. We can also implement a check system so when children load success/faulure, the child can have access to parent thread using the parent id and system sets the value. So before the parent creates the child thread, the parent will set the load status to 0 which is basically initializing. Then paret waits for load status to change in order to get access to the check system.
+If we were to do this using the child parent relationship method,
+we would have the parent record the child load status. Child can 
+have access to the parent thread via a new parent id. By doing so, 
+child thread can exit anytime and only one variable inside parent 
+thread is enough. We can also implement a check system so when 
+children load success/faulure, the child can have access to parent 
+thread using the parent id and system sets the value. So before the 
+parent creates the child thread, the parent will set the load status 
+to 0 which is basically initializing. Then paret waits for load 
+status to change in order to get access to the check system.
 
 
 >> B8: Consider parent process P with child process C.  How do you
@@ -288,13 +301,26 @@ If we were to do this using the child parent relationship method, we would have 
 >> terminates without waiting, before C exits?  After C exits?  Are
 >> there any special cases?
 
-If we had more time we would implemented a simple lock on the list of children which can deal with almost all of the situations above. Lets call process "P" and child "C" so it is easier to understand.
+If we had more time we would implemented a simple lock on the list of
+children which can deal with almost all of the situations above. 
+Lets call process "P" and child "C" so it is easier to understand.
 
-First if P calls wait(C) before C exits, P notices that C is still alive and spins. When C does ultimately exit, then it goes into the next case:
+First if P calls wait(C) before C exits, P notices that C is still 
+alive and spins. When C does ultimately exit, then it goes into the 
+next case:
 
 If P calls wait(C) after C exits, P finds C and releases it.
 
-Our implementation would make sure that resources are realesed in an efficient manner. For ex, a thread is responsible for cleaning up its own struct. But a dead thread struct is always the parent's responsibility. Thus the parent just needs to make sure that a dead thread object is not created by a child after it's done cleaning up all of its dead children in preparation of it's own death. In order to do so, we would have to set the pointer of child's parent to null and children_lock would ensure its actually safe. However there is a key thing we cannot forget to implement that is children have to check that their parent pointer is not null both before and after getting parent's children lock.
+Our implementation would make sure that resources are realesed in an 
+efficient manner. For ex, a thread is responsible for cleaning up its 
+own struct. But a dead thread struct is always the parent's responsibility. 
+Thus the parent just needs to make sure that a dead thread object is not
+created by a child after it's done cleaning up all of its dead children 
+in preparation of it's own death. In order to do so, we would have to set 
+the pointer of child's parent to null and children_lock would ensure its 
+actually safe. However there is a key thing we cannot forget to implement 
+that is children have to check that their parent pointer is not null both 
+before and after getting parent's children lock.
 
 
 ---- RATIONALE ---- 
