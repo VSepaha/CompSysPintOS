@@ -296,7 +296,7 @@ Example:
 >> B9: Why did you choose to implement access to user memory from the
 >> kernel in the way that you did?
 
-(Vineet)
+(Vineet - Done)
 >> B10: What advantages or disadvantages can you see to your design
 >> for file descriptors?
 
