@@ -28,13 +28,13 @@ Vineet Sepaha:
 
 Kevin Wu:
 - Process Termination Messages (50%)
-- System calls: create(), remove(), open(), filesize(), (close, exit)
+- System calls: create(), remove(), open(), filesize()
 - syscall_handler()
-- Worked on merging the system calls into syscall.c
+- Collated the system calls from each member into syscall.c
 and fixed errors received from doing so.
 
 Prit Modi:
-- System calls: halt(), exec(), wait() (exit, close)
+- System calls: halt(), exec(), wait(), exit(), close()
 - Synchronization between parent and child
 
 >> Please cite any offline or online sources you consulted while
@@ -46,7 +46,7 @@ Prit Modi:
 
 			   ARGUMENT PASSING
 			   ================
-(Vineet - Done)
+
 ---- DATA STRUCTURES ----
 
 >> A1: Copy here the declaration of each new or changed `struct' or
@@ -58,8 +58,7 @@ In process.c:
 /* The purpose of this function was to implement string parsing */
 
 
-
----- ALGORITHMS ---- (Done)
+---- ALGORITHMS ---- 
 
 >> A2: Briefly describe how you implemented argument parsing.  How do
 >> you arrange for the elements of argv[] to be in the right order?
@@ -86,7 +85,7 @@ arguments onto the stack.The last two things we pushed onto the stack was a poin
 the address was stored for the first argument and then we pushed on a value of zero onto
 the stack to show that we were finished with setting up the stack. 
 
----- RATIONALE ---- (Done)
+---- RATIONALE ---- 
 
 >> A3: Why does Pintos implement strtok_r() but not strtok()?
 
@@ -185,7 +184,6 @@ struct list file_list;
 
 ---- ALGORITHMS ----
 
-(Vineet - Done)
 >> B3: Describe your code for reading and writing user data from the
 >> kernel.
 
@@ -207,7 +205,6 @@ equal to file_write(file, buffer, size), release the lock and return the return 
 If the file descriptor is equal to STDOUT_FILENO then we use putbuf() to print the content of
 the buffer to the console.
 
-(Kevin - Done)
 >> B4: Suppose a system call causes a full page (4,096 bytes) of data
 >> to be copied from user space into the kernel.  What is the least
 >> and the greatest possible number of inspections of the page table
@@ -236,12 +233,10 @@ that is would handle these errors appropriately. As such,
 there wouldn't be a need for any inspections. 
 
 
-(Prit - Done)
 >> B5: Briefly describe your implementation of the "wait" system call.
 
 Basically our implementation of wait call keeps going through list of children in a loop looking for one of them to be dead. If it's dead, it cleans up the dead struct and returns the status if it exists. THen when it exits it replaces itself on it's parent's list of children with it's dead body. And then synchronization is achieved with a single lock per list of children.
 
-(Kevin - Done)
 >> B6: Any access to user program memory at a user-specified address
 >> can fail due to a bad pointer value.  Such accesses must cause the
 >> process to be terminated.  System calls are fraught with such
@@ -279,14 +274,13 @@ Example:
 
 ---- SYNCHRONIZATION ----
 
-(Prit - Done)
 >> B7: The "exec" system call returns -1 if loading the new executable
 >> fails, so it cannot return before the new executable has completed
 >> loading.  How does your code ensure this?
 
 If we were to do this using the child parent relationship method, we would have the parent record the child load status. Child can have access to the parent thread via a new parent id. By doing so, child thread can exit anytime and only one variable inside parent thread is enough. We can also implement a check system so when children load success/faulure, the child can have access to parent thread using the parent id and system sets the value. So before the parent creates the child thread, the parent will set the load status to 0 which is basically initializing. Then paret waits for load status to change in order to get access to the check system.
 
-(Prit - Done)
+
 >> B8: Consider parent process P with child process C.  How do you
 >> ensure proper synchronization and avoid race conditions when P
 >> calls wait(C) before C exits?  After C exits?  How do you ensure
@@ -305,7 +299,6 @@ Our implementation would make sure that resources are realesed in an efficient m
 
 ---- RATIONALE ---- 
 
-(Kevin - Done)
 >> B9: Why did you choose to implement access to user memory from the
 >> kernel in the way that you did?
 
@@ -328,7 +321,7 @@ when it occurs, computer resources are already being used
 and must be reallocated and freed; this is a tedious job and 
 avoiding such an issue was our main concern.
 
-(Vineet - Done)
+
 >> B10: What advantages or disadvantages can you see to your design
 >> for file descriptors?
 
