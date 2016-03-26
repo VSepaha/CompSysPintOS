@@ -117,6 +117,8 @@ from occuring in the kernel.
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
+ The following were added in syscall.c
+
 //Global Variables
 #define MAX_FILE_SIZE 204800
 //Maximum size of file
@@ -145,13 +147,36 @@ struct file* file_check (int fd)
 /* The struct is used to be able to reference the file that is going to be 
 used. */
  
-
 static struct lock LOCK; 
 /* LOCK is implemented to prevent interrupts during the critical section of a system call */
 
 typedef int pid_t;
 /* To define certain parameters as threads */
 
+struct process_file
+{
+	struct file *file;
+	int fd;
+	struct list_elem elem;
+};
+// Declared in order for the implemented functions process_file_add() and process_file_get() to work
+
+struct file* process_file_get(int fd);
+// Used in order to push in the file process
+
+
+The following were added in thread.h within thread struct:
+struct thread{
+...
+
+struct file *exec
+// File with the thread executable
+
+struct list file_list;
+// List used to keep all the files
+
+...
+}
 
 
 >> B2: Describe how file descriptors are associated with open files.
