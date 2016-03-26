@@ -18,6 +18,11 @@ Prit Modi pmm176@scarletmail.ruters.edu
 >> If you have any preliminary comments on your submission, notes for the
 >> TAs, or extra credit, please give them here.
 
+For the system calls portion of this assignment, the assigned member (Prit Modi)
+whose task was to implement syscalls exit and close was unable to fulfill 
+his portion. The assigned member (Prit Modi) also did not contribute his portion
+for parent, child communication. 
+
 		    ---Work Division----
 
 Vineet Sepaha:
@@ -34,7 +39,7 @@ Kevin Wu:
 and fixed errors received from doing so.
 
 Prit Modi:
-- System calls: halt(), exec(), wait(), exit(), close()
+- System calls: halt(), exec(), wait().
 - Synchronization between parent and child
 
 >> Please cite any offline or online sources you consulted while
