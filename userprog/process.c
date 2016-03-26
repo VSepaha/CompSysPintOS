@@ -23,13 +23,13 @@
 
 #define DEFAULT_ARGV 2
 
+char *act_file_name;
+
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
 ////////////////////////ADDED Functions///////////////////////////////////////////
 static void get_args(char * cmd_string, char* argv[], int *argc);
-
-
 
 /* Starts a new thread running a user program loaded from
    FILENAME.  The new thread may be scheduled (and may even exit)
@@ -63,7 +63,17 @@ start_process (void *file_name_)
   char *file_name = file_name_;
   struct intr_frame if_;
   bool success;
+
+  /* The following were added in */
   struct thread *cur;
+  
+  //Get actual file name (first item parsed)
+ 
+  char *file_name_copy = file_name;
+  file_name_copy = strtok_r(file_name_copy," ", &act_file_name);
+  
+  /* End of elements added in    */
+
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
@@ -78,10 +88,10 @@ start_process (void *file_name_)
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success){ 
-    	thread_exit ();
+      thread_exit ();
   } else {
-		cur->exec = filesys_open (file_name); 
-		file_deny_write (cur->exec); /* Deny the file write */
+    cur->exec = filesys_open (file_name); 
+    file_deny_write (cur->exec); /* Deny the file write */
   }
 
   /* Start the user process by simulating a return from an
@@ -117,7 +127,7 @@ process_exit (void)
   uint32_t *pd;
 
   ////////////////////////////////Termination messages//////////////////////////////
-  //printf("%s: exit(%d)\n", cur->name, cur->return_status);
+  printf("%s: exit(%d)\n", act_file_name, cur->return_status);
 
   if (cur->exec != NULL)
     file_allow_write (cur->exec);
@@ -471,53 +481,53 @@ setup_stack (void **esp, char* argv[], int argc)
       success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
       if (success){
         *esp = PHYS_BASE;
-	    int params = argc;
-		uint32_t *array[argc];
-		
-		//allocating 4kb of data
-  		realloc(*esp, 4096);
-		
-		//push string parameters on the stack
-		for(params = argc; params != 0; params--){
-			//offset of the stack for each parameter
-			*esp = *esp - (strlen(argv[params])+1)*sizeof(char);
-			//saves the address of the parameter
-			array[params] = (uint32_t*)*esp;	
-			/* Copy the parameter onto the stack location the number of 
-			   bytes in the string and the null char */
-			memcpy(*esp, argv[params],strlen(argv[params])+1);	
-		}
+      int params = argc;
+    uint32_t *array[argc];
+    
+    //allocating 4kb of data
+      realloc(*esp, 4096);
+    
+    //push string parameters on the stack
+    for(params = argc; params != 0; params--){
+      //offset of the stack for each parameter
+      *esp = *esp - (strlen(argv[params])+1)*sizeof(char);
+      //saves the address of the parameter
+      array[params] = (uint32_t*)*esp;  
+      /* Copy the parameter onto the stack location the number of 
+         bytes in the string and the null char */
+      memcpy(*esp, argv[params],strlen(argv[params])+1);  
+    }
 
-		//word align
-		if ((int)*esp%4 != 0){
-		    int offset = (int)*esp%4;
-		    *esp = *esp - offset;
-		} 
+    //word align
+    if ((int)*esp%4 != 0){
+        int offset = (int)*esp%4;
+        *esp = *esp - offset;
+    } 
 
-		//offset stack and push the sentinel onto the stack
-		*esp = *esp - 4;
-		(*(int*)(*esp)) = 0;
+    //offset stack and push the sentinel onto the stack
+    *esp = *esp - 4;
+    (*(int*)(*esp)) = 0;
 
-		//push the references to the string parameters onto the stack
-		params = argc;
-		for(params = argc; params != 0; params--){
-			*esp = *esp - 4;
-			(*(uint32_t**)(*esp)) = array[params];
-		}
-		
-		//create a pointer to the first parameter reference
-		*esp = *esp - 4;
-		(*(uint32_t**)(*esp)) = *esp + 4;
+    //push the references to the string parameters onto the stack
+    params = argc;
+    for(params = argc; params != 0; params--){
+      *esp = *esp - 4;
+      (*(uint32_t**)(*esp)) = array[params];
+    }
+    
+    //create a pointer to the first parameter reference
+    *esp = *esp - 4;
+    (*(uint32_t**)(*esp)) = *esp + 4;
 
-		//push onto the stack the number of arguments
-		*esp = *esp - 4;
-		*(int*)(*esp) = argc;
+    //push onto the stack the number of arguments
+    *esp = *esp - 4;
+    *(int*)(*esp) = argc;
 
-		//push return address onto the stack
-		*esp = *esp - 4;
-		*(int*)(*esp) = 0;
-		
-	  }
+    //push return address onto the stack
+    *esp = *esp - 4;
+    *(int*)(*esp) = 0;
+    
+    }
       else
         palloc_free_page (kpage);
     }
@@ -548,17 +558,17 @@ install_page (void *upage, void *kpage, bool writable)
 static void
 get_args(char * cmd_string, char *argv[], int *argc)
 {
-	char *ptr;
-	char *token;
+  char *ptr;
+  char *token;
 
-	argv[0] = strtok_r(cmd_string, " ", &ptr);
-	*argc = 1;
-	
+  argv[0] = strtok_r(cmd_string, " ", &ptr);
+  *argc = 1;
+  
 //while there are still arguments
-	while((token = strtok_r(NULL, " ", &ptr)) != NULL) {
-		argv[(*argc)++] = token;
-	}
-		
+  while((token = strtok_r(NULL, " ", &ptr)) != NULL) {
+    argv[(*argc)++] = token;
+  }
+    
 }
 
 

@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include <string.h>
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -101,6 +102,7 @@ struct thread
   	struct list file_list;
   	int fd;
   	int return_status;
+  	string name_of_file;		
 /* End of elements added in   */
 #endif
 
