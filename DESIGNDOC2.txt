@@ -389,4 +389,5 @@ time to finish the amount that we were able to finish.
 Not enough guidance to mislead.
 
 >> Any other comments?
-A dedicated lecture/office hour that teaches us the requirements and overall tasks needed would be greatly appreciated.
+A dedicated lecture/office hour that teaches us the requirements and overall 
+tasks needed would be greatly appreciated.
