@@ -8,8 +8,8 @@ Components of Project:
 5) Accessing User Memory (UNFINISHED)
 
 4/5/2016
-- We need to go through the design document and decide who will work on which 
-part of the project.
+- We need to go through the design document and go through the different 
+parts we need to do to complete the project.
 - Next time that we meet, we should have read up on the different aspects
 of the project to get an idea about what we are working on.
 
