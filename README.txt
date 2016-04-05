@@ -1,13 +1,25 @@
-Pintos User Programs
+Pintos Project 3: Virtual Memory
 
-Process Termination Messages:
-- Completed
+Components of Project:
+1) Design Doc (UNFINISHED)
+2) Paging (UNFINISHED)
+3) Stack Growth (UNFINISHED)
+4) Memory-Mapped Files (UNFINISHED)
+5) Accessing User Memory (UNFINISHED)
 
-Argument Passing:
-- Implementation is completed, however, it is not working.
+4/5/2016
+- We need to go through the design document and decide who will work on which 
+part of the project.
+- Next time that we meet, we should have read up on the different aspects
+of the project to get an idea about what we are working on.
 
-Syscalls:
-All syscall functions are implemented EXCEPT "close"/"exit".
+4/7/2016
+- We will each divide up the project so we know who will work on which part.
+- Next time that we meet, we should have a general idea about what we have to 
+do for each of our parts for the project.
 
-Denying Writes to Executables:
-- Completed
+4/11/2016 (Dont really need to meet unless necessary)
+- We should each have started to implement our part of the project.
+- Next time we will discuss what each member of the group is working on and
+if there are any problems which we need to deal with in the implementation.
+
