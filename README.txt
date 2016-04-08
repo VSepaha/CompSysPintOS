@@ -26,6 +26,7 @@ of the project to get an idea about what we are working on.
 - We will each divide up the project so we know who will work on which part.
 - Next time that we meet, we should have a general idea about what we have to 
 do for each of our parts for the project.
+- Missing group member Prit for this meeting
 
 4/11/2016 (Dont really need to meet unless necessary)
 - We should each have started to implement our part of the project.
