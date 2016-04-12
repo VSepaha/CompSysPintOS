@@ -32,3 +32,11 @@ do for each of our parts for the project.
 - We should each have started to implement our part of the project.
 - Next time we will discuss what each member of the group is working on and
 if there are any problems which we need to deal with in the implementation.
+- Have a list of questions regarding the project to be asked during lecture.
+
+4/12/2016
+- Most of the questions left for this project should've been discussed 
+and answered by IP during class time.
+- Division of labor clarified (LOOKING AT YOU PRIT)
+- Implementation should have begun and each member should have gotten
+inspiration (WILSONRYANTIM)
