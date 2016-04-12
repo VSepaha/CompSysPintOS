@@ -40,3 +40,29 @@ and answered by IP during class time.
 - Division of labor clarified (LOOKING AT YOU PRIT)
 - Implementation should have begun and each member should have gotten
 inspiration (WILSONRYANTIM)
+
+--------------------------------------------------------------
+
+Kevin's Questions to be asked:
+
+- Supplemental Page Table
+	- which implementation is prefered?
+		- in terms of segments
+		- in terms of pages
+		- optional: use page table itself as an index
+		to track members of the supplemental page table
+	- page fault handler
+		- page_fault() in "userprog/exception.c"
+		- "If the memory reference is valid, use the supplemental page table entry to locate the data that goes in the page, which might be in the file system, or in a swap slot, or it might be an all-zero page..."
+			- What is an "all-zero" page?
+	- "If you implement sharing..."
+		- Is sharing not required? Is it recommended to implement?
+	- "Fetch the data into the frame, by reading it from the 	   file system or swap, zeroing it, etc"
+		- What does "zeroing" it entitle?
+
+- Frame Table
+	- which eviction method is the preferred?
+
+- Swap Table
+
+- Table of file mappings
