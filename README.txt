@@ -54,10 +54,9 @@ Kevin's Questions to be asked:
 	- page fault handler
 		- page_fault() in "userprog/exception.c"
 		- "If the memory reference is valid, use the supplemental page table entry to locate the data that goes in the page, which might be in the file system, or in a swap slot, or it might be an all-zero page..."
-			- What is an "all-zero" page?
-	- "If you implement sharing..."
+			- What is an "all-zero" pa	- "If you implement sharing..."
 		- Is sharing not required? Is it recommended to implement?
-	- "Fetch the data into the frame, by reading it from the 	   file system or swap, zeroing it, etc"
+	- "Fetch the data into the frame, by reading it from the file system or swap, zeroing it, etc"
 		- What does "zeroing" it entitle?
 
 - Frame Table
