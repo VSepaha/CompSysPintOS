@@ -41,27 +41,16 @@ and answered by IP during class time.
 - Implementation should have begun and each member should have gotten
 inspiration (WILSONRYANTIM)
 
---------------------------------------------------------------
+4/14/2016
+- We have the parts of the projects divided, to reiterate:
+Kevin - page.c and page.h
+Prit - swap.c and swap.h
+Vineet - frame.c and frame.h
+- If anyone plans on using inspiration for their part, you should comment
+all of the code to understand the theory and change all of the variable names.
+- For the next time we meet, we should each have some portion of our work done
+and be able to explain it.
+- Also as you do work, update it on the file called 'Work Log.txt'
 
-Kevin's Questions to be asked:
+4/18/2016
 
-- Supplemental Page Table
-	- which implementation is prefered?
-		- in terms of segments
-		- in terms of pages
-		- optional: use page table itself as an index
-		to track members of the supplemental page table
-	- page fault handler
-		- page_fault() in "userprog/exception.c"
-		- "If the memory reference is valid, use the supplemental page table entry to locate the data that goes in the page, which might be in the file system, or in a swap slot, or it might be an all-zero page..."
-			- What is an "all-zero" pa	- "If you implement sharing..."
-		- Is sharing not required? Is it recommended to implement?
-	- "Fetch the data into the frame, by reading it from the file system or swap, zeroing it, etc"
-		- What does "zeroing" it entitle?
-
-- Frame Table
-	- which eviction method is the preferred?
-
-- Swap Table
-
-- Table of file mappings
