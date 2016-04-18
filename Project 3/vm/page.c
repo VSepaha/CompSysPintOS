@@ -16,7 +16,7 @@
 #include "vm/swap.h"
 
 /*
- * Functions takes in elements to the suppl page table and places it un appropriate location
+ * Functions takes in elements to the suppl page table and places it in appropriate location
  *
  * @return location of an Unused Virtual Address
  */
@@ -52,14 +52,10 @@ void page_table_rm (struct hash *suppl_page_table){
 	hash_destroy (suppl_page_table, page_action_function);
 }
 
-
-
 /*
  * Function to remove a page table
  * 
  * Uses hash_destroy, built in function located in <hash.h>
- *
- *
  *
  * @return void
  *
