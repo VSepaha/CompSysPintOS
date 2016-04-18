@@ -1,7 +1,79 @@
 Please describe when you worked and what you got done:
 
-- Vineet
+<<<<<<< HEAD
+4/18/16
+@Vineet Sepaha
 	Worked on the frame.c and frame.h file.
 	Finished implementing a couple of functions, and commented on what the 
 functions are used to do.
 
+=======
+4/18/16
+@Kevin Wu
+
+The following were added to page.h
+
+page.h :
+{
+	#ifndef VM_PAGE_H
+	#define VM_PAGE_H
+
+	#include <hash.h>
+	#include "vm.frame.h"
+
+
+struct suppl_page_table_ent{
+
+	void *unused_virtual_address;
+
+	struct hash_elem elem;
+
+};
+
+void page_table_init (struct hash *suppl_page_table);
+void page_table_rm (struct hash *suppl_page_table);
+
+}
+
+The following were added page.c
+
+Please note: corresponding comments are provided. They have not been copied to this worklog for spatial reasons.
+
+page.c :
+{
+	#include "vm/frame.h"
+	#include "vm/page.h"
+	#include "vm/swap.h"
+
+	static unsigned page_hash_function (const struct hash_elem *e, void *aux UNUSED){
+		struct suppl_page_tbl_ent *spte = hash_entry(e, struct suppl_page_tbl_ent, elem);
+
+			return hash_int((int) spte -> unused_virtual_address);
+		}
+
+		void page_table_init (struct hash *suppl_page_table){
+		hash_init(suppl_page_table, page_hash_function, page_less_function, NULL);
+	}
+
+	void page_table_rm (struct hash *suppl_page_table){
+		hash_destroy (suppl_page_table, page_action_function);
+	}
+
+	struct suppl_page_tbl_ent* get_spte (void * unused_virtual_address){
+
+		struct suppl_page_tbl_entry spte;
+		
+		spte.unused_virtual_address = pg_round_down(unused_virtual_address);
+
+		struct hash_element *e = hash_find(&thread_curren() ->spte, &spte.elem);
+		if(!e)
+		{
+			return NULL;
+		}
+		return hash_entry(e, struct suppl_page_tbl_ent, elem);
+
+	}
+
+
+}
+>>>>>>> 1815fc1d6df05085fff650306e3a2419d76c0507
