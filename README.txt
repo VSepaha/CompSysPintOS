@@ -53,4 +53,10 @@ and be able to explain it.
 - Also as you do work, update it on the file called 'Work Log.txt'
 
 4/18/2016
+- Have a short discussion on what each group member worked on for the project
+- Please remember to update the work log every time you work on the project, also
+MAKE SURE TO WORK on the project
+- For the next time we meet, you MUST have some work to show and talk about.
+- If you do not have any work done, there is no reason for you to attend the meeting.
 
+ 
