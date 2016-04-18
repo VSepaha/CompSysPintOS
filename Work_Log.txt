@@ -1,2 +1,7 @@
 Please describe when you worked and what you got done:
 
+- Vineet
+	Worked on the frame.c and frame.h file.
+	Finished implementing a couple of functions, and commented on what the 
+functions are used to do.
+
