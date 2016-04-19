@@ -19,7 +19,7 @@ struct suppl_page_table_ent{
 
 	void *unused_virtual_address;
 
-	struct hash_elem elem;
+	struct hash_elem element;
 
 };
 
