@@ -1,6 +1,5 @@
 Please describe when you worked and what you got done:
 
-<<<<<<< HEAD
 4/18/16
 @Vineet Sepaha
 	Worked on the frame.c and frame.h file.
@@ -28,4 +27,3 @@ functions are used to do.
 
 	- Implementation near completion for page.c, page.h needs work done
 
->>>>>>> 1815fc1d6df05085fff650306e3a2419d76c0507
