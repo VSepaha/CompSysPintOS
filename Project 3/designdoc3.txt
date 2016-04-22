@@ -14,7 +14,10 @@ Prit Modi <pmm176@scraletmail.rutgers.edu>
 
 >> Fill in the contribution of each member.
 
-
+In the vm folder:
+- Prit: swap.c and swap.h
+- Kevin: page.c and page.h
+- Vineet: frame.c and frame.h
 
 
 ---- PRELIMINARIES ----
@@ -25,6 +28,9 @@ Prit Modi <pmm176@scraletmail.rutgers.edu>
 >> Please cite any offline or online sources you consulted while
 >> preparing your submission, other than the Pintos documentation, course
 >> text, lecture notes, and course staff.
+Resources
+- http://courses.cs.vt.edu/~cs3204/fall2009/pintos-vt-local/Project3Session.pdf
+- http://csl.skku.edu/uploads/CSE3008F09/project3.pdf
 
 			PAGE TABLE MANAGEMENT
 			=====================
