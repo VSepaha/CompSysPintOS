@@ -25,7 +25,7 @@ functions are used to do.
 		e) load file
 	- Corresponding comments have been added
 
-	- Implementation near completion for page.c, page.h needs work done
+	- Implementation near completion for page.c. page.h needs work done
 	
 =======
 4/21/16
@@ -34,3 +34,14 @@ functions are used to do.
 	There are errors in userprog because we do not have the complete versions
 of page.c, page.h, swap.c and swap.h.
 
+=======
+4/22/16
+@Kevin Wu
+	- Completed page.c and page.h
+		- Note: Additional changes will still be needed as swap.c and swap.h are not yet implemented
+	- Added the following functions:
+		a) add file to page table
+		b) map memory to page table
+		c) growth of stack
+	- NOTE: there is a difference between "suppl_page_tbl_ent" and "suppl_page_table"
+	- Corresponding comments have been added
