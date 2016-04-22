@@ -28,8 +28,9 @@ void frame_tbl_init(void);
 void add_frame_to_tbl (void *frame, struct sup_page_entry *spte);
 // allocate memory for the frame
 void* frame_alloc(enum palloc_flags flags, struct sup_page_entry *spte);
-// 
+// free tbe frame passed as argument
 void free_frame(void *frame);
-void* frame_evict(enum palloc_flags flags);
+// frame eviction policy
+void* evict_frame(enum palloc_flags flags);
 
 #endif /* vm/frame.h */

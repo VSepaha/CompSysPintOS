@@ -75,28 +75,37 @@ void free_frame(void *frame) {
 	//acquire lock
 	lock_acquire(&frame_tbl_lock);
 
+	//iterate through the list (frame table), and for the frame which 
+	// is called to be free, remove it from the list and free the page 
 	struct list_elem *e;
   	for (e = list_begin(&frame_tbl_list); e != list_end(&frame_tbl_list);
-       e = list_next(e)) {
+	    e = list_next(e)) {
 
-      struct frame_tbl_ent *fte = list_entry(e, struct frame_tbl_ent, elem);
+  		//get the current frame from the frame table list
+	    struct frame_tbl_ent *curr_frame = list_entry(e, struct frame_tbl_ent, elem);
 
-      if (fte->frame == frame) {
-		  list_remove(e);
-		  free(fte);
-		  palloc_free_page(frame);
-		  break;
+		//check if the current frame is the frame which is going to be removed
+	    if (curr_frame->frame == frame) {
+	    	// remove the element from the list and free the current frame
+			list_remove(e);
+			free(curr_frame);
+			palloc_free_page(frame);
+
+			break;
 		}
     }
     //release the lock
 	lock_release(&frame_tbl_lock);
 }
 
+// frame eviction policy (kevin you can work on this if you want,
+// or we can go with what we have) 
+void* evict_frame (enum palloc_flags flags) {
 
-void* frame_evict (enum palloc_flags flags) {
-  
+	//acquire the lock
 	lock_acquire(&frame_tbl_lock);
 
+	//get the first element of the list
 	struct list_elem *e = list_begin(&frame_tbl_list);
 
 	while (true) {
