@@ -16,7 +16,7 @@ struct lock frame_tbl_lock;
 struct frame_tbl_ent {
   	void *frame; // frame in the entry
   	struct thread *thread; //thread for the frame table entry
-  	struct suppl_page_table_ent *spte; // supplemental page table enrty
+  	struct suppl_page_tbl_ent *spte; // supplemental page table enrty
   	struct list_elem elem; // list element
 };
 

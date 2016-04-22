@@ -18,7 +18,7 @@ void frame_tbl_init(void) {
 }
 
 // function used to add a frame to the table
-void add_frame_to_tbl(void *frame, struct suppl_page_table_ent *spte) {
+void add_frame_to_tbl(void *frame, struct suppl_page_tbl_ent *spte) {
   struct frame_tbl_ent *fte = malloc(sizeof(struct frame_tbl_ent)); // allocate memory the size of the frame table
 
   // set the parameters for the frmane table entry
@@ -33,7 +33,7 @@ void add_frame_to_tbl(void *frame, struct suppl_page_table_ent *spte) {
 }
 
 // allocate memory for the frame table
-void* frame_alloc(enum palloc_flags flags, struct suppl_page_table_ent *spte) {
+void* frame_alloc(enum palloc_flags flags, struct suppl_page_tbl_ent *spte) {
 
 // safeguard to ensure that PAL_USER is called 
   if ( (flags & PAL_USER) == 0 ) {

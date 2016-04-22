@@ -165,7 +165,7 @@ page_fault (struct intr_frame *f)
   bool load = false;
   if (not_present && fault_addr > USER_VADDR_BOTTOM &&
     is_user_vaddr(fault_addr)) {
-    struct suppl_page_table_ent *spte = get_spte(fault_addr);
+    struct suppl_page_tbl_ent *spte = get_spte(fault_addr);
     if (spte) {
       load = load_page(spte);
       spte->pinned = false;
