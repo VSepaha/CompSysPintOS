@@ -224,3 +224,17 @@ bool load_file (struct suppl_page_tbl_ent *spte)
 	spte -> is_loaded = true;
 	return true;
 }
+
+/*
+ * Function to add a file to a page tbale
+ *
+ * @return TRUE if success, FALSE otherwise
+ */
+
+
+
+ // HEY DIPSHIT
+ // grow_stack ==> stack_growth
+ // I didn't mean it when i said dipshit
+ // srry please no cryerino
+ 
