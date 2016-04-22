@@ -6,7 +6,7 @@
  *
  * Use at your own discretion
  *
- * @author kevin.wu52
+ * @author kevinwu52
  */
 
  /*----------------------------------------------------------*/
@@ -31,7 +31,7 @@
  *
  * @return location of an Unused Virtual Address
  */
-static unsigned page_hash_function (const struct hash_element *e, void *aux UNUSED){
+static unsigned page_hash (const struct hash_element *e, void *aux UNUSED){
 	struct suppl_page_tbl_ent *spte = hash_entry(e, struct suppl_page_tbl_ent, element);
 
 	return hash_int((int) spte -> unused_virtual_address);
@@ -42,7 +42,7 @@ static unsigned page_hash_function (const struct hash_element *e, void *aux UNUS
  *
  * @return TRUE if first elem is less than second elem, FALSE otherwise
  */
- static bool page_less_function (const struct hash_element *a,
+ static bool page_compare (const struct hash_element *a,
  								 const struct hash_element *b,
  								 void *aux UNUSED)
  {
@@ -63,7 +63,7 @@ static unsigned page_hash_function (const struct hash_element *e, void *aux UNUS
  * @return void
  */
 
-static void page_action_function (struct hash_element *e, void *aux UNUSED)
+static void page_function (struct hash_element *e, void *aux UNUSED)
 {
 	struct suppl_page_tbl_ent *spte = hash_entry(e,struct suppl_page_tbl_ent, elem);
 
@@ -86,7 +86,7 @@ static void page_action_function (struct hash_element *e, void *aux UNUSED)
  * @return void
  */
 void page_table_init (struct hash *suppl_page_table){
-	hash_init(suppl_page_table, page_hash_function, page_less_function, NULL);
+	hash_init(suppl_page_table, page_hash, page_compare_function, NULL);
 }
 
 /*
@@ -97,7 +97,7 @@ void page_table_init (struct hash *suppl_page_table){
  * @return void
  */
 void page_table_rm (struct hash *suppl_page_table){
-	hash_destroy (suppl_page_table, page_action_function);
+	hash_destroy (suppl_page_table, page_function);
 }
 
 /*
@@ -109,7 +109,7 @@ void page_table_rm (struct hash *suppl_page_table){
  */
 struct suppl_page_tbl_ent* get_spte (void * unused_virtual_address){
 
-	struct suppl_page_tbl_entry spte;
+	struct suppl_page_tbl_ent spte;
 	
 	// pg_round_down is a built in function located in /src/threads/vaddr.h
 	spte.unused_virtual_address = pg_round_down(unused_virtual_address);
@@ -228,48 +228,59 @@ bool load_file (struct suppl_page_tbl_ent *spte)
 /*
  * Function to add a file to a page tbale
  *
+ * First, allocate space in memory corresponding to the size of the supplemental page table
+ * Next, check if the we have a valid supplemental page table entry, if not @return false
+ * If true, continue...
+ *
  * @return TRUE if success, FALSE otherwise
  */
 
-bool add_file_to_page_table (struct file *file, int32_t ofs, uint8_t *upage,
+bool add_file_page_tbl (struct file *file, int32_t ofs, uint8_t *upage,
 			     uint32_t read_bytes, uint32_t zero_bytes,
 			     bool writable)
 {
-  struct sup_page_entry *spte = malloc(sizeof(struct sup_page_entry));
+  struct suppl_page_tbl_ent *spte = malloc(sizeof(struct suppl_page_tbl_ent));
   if (!spte)
     {
       return false;
     }
-  spte->file = file;
-  spte->offset = ofs;
-  spte->uva = upage;
-  spte->read_bytes = read_bytes;
-  spte->zero_bytes = zero_bytes;
-  spte->writable = writable;
-  spte->is_loaded = false;
-  spte->type = FILE;
-  spte->pinned = false;
+  spte -> file = file;
+  spte -> offset = ofs;
+  spte -> unused_virtual_address = upage;
+  spte -> read_bytes = read_bytes;
+  spte -> zero_bytes = zero_bytes;
+  spte -> writable = writable;
+  spte -> is_loaded = false;
+  spte -> type = FILE;
+  spte -> pinned = false;
 
-  return (hash_insert(&thread_current()->spt, &spte->elem) == NULL);
+  return (hash_insert(&thread_current() -> suppl_page_table, &spte -> elem) == NULL);
 }
 
-bool add_mmap_to_page_table(struct file *file, int32_t ofs, uint8_t *upage,
+/*
+ * Function to map memory to the page table
+ *
+ * Implementation almost identical to add_file_to_page_tbl()
+ *
+ * @return TRUE if success, FALSE otherwise
+ */
+bool add_mmap_page_tbl(struct file *file, int32_t ofs, uint8_t *upage,
 			     uint32_t read_bytes, uint32_t zero_bytes)
 {
-  struct sup_page_entry *spte = malloc(sizeof(struct suppl_page_tbl_ent));
+  struct suppl_page_tbl_ent *spte = malloc(sizeof(struct suppl_page_tbl_ent));
   if (!spte)
     {
       return false;
     }
-  spte->file = file;
-  spte->offset = ofs;
-  spte->uva = upage;
-  spte->read_bytes = read_bytes;
-  spte->zero_bytes = zero_bytes;
-  spte->is_loaded = false;
-  spte->type = MMAP;
-  spte->writable = true;
-  spte->pinned = false;
+  spte -> file = file;
+  spte -> offset = ofs;
+  spte -> unused_virtual_address = upage;
+  spte -> read_bytes = read_bytes;
+  spte -> zero_bytes = zero_bytes;
+  spte -> is_loaded = false;
+  spte -> type = MMAP;
+  spte -> writable = true;
+  spte -> pinned = false;
 
   if (!process_add_mmap(spte))
     {
@@ -277,30 +288,36 @@ bool add_mmap_to_page_table(struct file *file, int32_t ofs, uint8_t *upage,
       return false;
     }
 
-  if (hash_insert(&thread_current()->spt, &spte->elem))
+  if (hash_insert( &thread_current() -> suppl_page_table, &spte -> elem))
     {
-      spte->type = HASH_ERROR;
+      spte -> type = HASH_ERROR;
       return false;
     }
   return true;
 }
 
-bool stack_growth (void *uva)
+/*
+ * Function to ensure the stack hasn't exceeded it's boundaries plus add elements to the stack
+ *
+ * 
+ *
+ */
+bool stack_growth (void *unused_virtual_address)
 {
-  if ( (size_t) (PHYS_BASE - pg_round_down(uva)) > MAX_STACK_SIZE)
+  if ( (size_t) (PHYS_BASE - pg_round_down(unused_virtual_address)) > MAX_STACK_SIZE)
     {
       return false;
     }
- struct sup_page_entry *spte = malloc(sizeof(struct sup_page_entry));
+ struct suppl_page_tbl_ent *spte = malloc(sizeof(struct suppl_page_tbl_ent));
   if (!spte)
     {
       return false;
     }
-  spte->uva = pg_round_down(uva);
-  spte->is_loaded = true;
-  spte->writable = true;
-  spte->type = SWAP;
-  spte->pinned = true;
+  spte -> unused_virtual_address = pg_round_down(unused_virtual_address);		// pg_round_down is a built in PintOS function
+  spte -> is_loaded = true;
+  spte -> writable = true;
+  spte -> type = SWAP;
+  spte -> pinned = true;
 
   uint8_t *frame = frame_alloc (PAL_USER, spte);
   if (!frame)
@@ -309,7 +326,7 @@ bool stack_growth (void *uva)
       return false;
     }
 
-  if (!install_page(spte->uva, frame, spte->writable))
+  if (!install_page(spte->unused_virtual_address, frame, spte->writable))
     {
       free(spte);
       frame_free(frame);
@@ -318,20 +335,11 @@ bool stack_growth (void *uva)
 
   if (intr_context())
     {
-      spte->pinned = false;
+      spte -> pinned = false;
     }
 
-  return (hash_insert(&thread_current()->spt, &spte->elem) == NULL);
+  return (hash_insert(&thread_current() -> suppl_page_table, &spte -> elem) == NULL);
 }
 
-
-
-
-
-
- // HEY DIPSHIT
- // grow_stack ==> stack_growth
- // I didn't mean it when i said dipshit
- // srry please no cryerino
 
 
