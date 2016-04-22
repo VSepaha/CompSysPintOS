@@ -15,7 +15,7 @@
 #include "vm.frame.h"
 
 
-struct suppl_page_table_ent{
+struct suppl_page_tbl_ent{
 
 	void *unused_virtual_address;
 
@@ -25,3 +25,6 @@ struct suppl_page_table_ent{
 
 void page_table_init (struct hash *suppl_page_table);
 void page_table_rm (struct hash *suppl_page_table);
+
+
+

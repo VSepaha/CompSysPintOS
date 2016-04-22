@@ -231,10 +231,107 @@ bool load_file (struct suppl_page_tbl_ent *spte)
  * @return TRUE if success, FALSE otherwise
  */
 
+bool add_file_to_page_table (struct file *file, int32_t ofs, uint8_t *upage,
+			     uint32_t read_bytes, uint32_t zero_bytes,
+			     bool writable)
+{
+  struct sup_page_entry *spte = malloc(sizeof(struct sup_page_entry));
+  if (!spte)
+    {
+      return false;
+    }
+  spte->file = file;
+  spte->offset = ofs;
+  spte->uva = upage;
+  spte->read_bytes = read_bytes;
+  spte->zero_bytes = zero_bytes;
+  spte->writable = writable;
+  spte->is_loaded = false;
+  spte->type = FILE;
+  spte->pinned = false;
+
+  return (hash_insert(&thread_current()->spt, &spte->elem) == NULL);
+}
+
+bool add_mmap_to_page_table(struct file *file, int32_t ofs, uint8_t *upage,
+			     uint32_t read_bytes, uint32_t zero_bytes)
+{
+  struct sup_page_entry *spte = malloc(sizeof(struct suppl_page_tbl_ent));
+  if (!spte)
+    {
+      return false;
+    }
+  spte->file = file;
+  spte->offset = ofs;
+  spte->uva = upage;
+  spte->read_bytes = read_bytes;
+  spte->zero_bytes = zero_bytes;
+  spte->is_loaded = false;
+  spte->type = MMAP;
+  spte->writable = true;
+  spte->pinned = false;
+
+  if (!process_add_mmap(spte))
+    {
+      free(spte);
+      return false;
+    }
+
+  if (hash_insert(&thread_current()->spt, &spte->elem))
+    {
+      spte->type = HASH_ERROR;
+      return false;
+    }
+  return true;
+}
+
+bool stack_growth (void *uva)
+{
+  if ( (size_t) (PHYS_BASE - pg_round_down(uva)) > MAX_STACK_SIZE)
+    {
+      return false;
+    }
+ struct sup_page_entry *spte = malloc(sizeof(struct sup_page_entry));
+  if (!spte)
+    {
+      return false;
+    }
+  spte->uva = pg_round_down(uva);
+  spte->is_loaded = true;
+  spte->writable = true;
+  spte->type = SWAP;
+  spte->pinned = true;
+
+  uint8_t *frame = frame_alloc (PAL_USER, spte);
+  if (!frame)
+    {
+      free(spte);
+      return false;
+    }
+
+  if (!install_page(spte->uva, frame, spte->writable))
+    {
+      free(spte);
+      frame_free(frame);
+      return false;
+    }
+
+  if (intr_context())
+    {
+      spte->pinned = false;
+    }
+
+  return (hash_insert(&thread_current()->spt, &spte->elem) == NULL);
+}
+
+
+
+
 
 
  // HEY DIPSHIT
  // grow_stack ==> stack_growth
  // I didn't mean it when i said dipshit
  // srry please no cryerino
- 
+
+
