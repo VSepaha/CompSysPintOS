@@ -26,4 +26,11 @@ functions are used to do.
 	- Corresponding comments have been added
 
 	- Implementation near completion for page.c, page.h needs work done
+	
+=======
+4/21/16
+@Vineet Sepaha
+	Worked on exception.c and syscall.h
+	There are errors in userprog because we do not have the complete versions
+of page.c, page.h, swap.c and swap.h.
 
