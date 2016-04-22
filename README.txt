@@ -59,4 +59,10 @@ MAKE SURE TO WORK on the project
 - For the next time we meet, you MUST have some work to show and talk about.
 - If you do not have any work done, there is no reason for you to attend the meeting.
 
+4/21/2016
+- Finish up the vm files and go through the functionality of each function.
+- Determine the other work that is needed in order to complete the project.
+- Split up the rest of the work.
+- For next time, each person should read all the implementation and have questions
+ready if needed. Also we should have started implementing the parts which we divided.
  
