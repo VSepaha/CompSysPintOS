@@ -58,8 +58,8 @@ void page_table_rm (struct hash *suppl_page_table);
 bool load_page (struct suppl_page_tbl_ent *spte);
 bool load_mmap (struct suppl_page_tbl_ent *spte);
 bool load_swap (struct suppl_page_tbl_ent *spte);
-bool add_file_page_tbl (struct file *file, int32t ofs, uint8_t *upage, uint32_t read_bytes, uint32_t zero_bytes, bool writable);
-bool add_mmap_page_tbl (struct file *file, int32t ofs, uint8_t *upage, uint32_t read_bytes, uint32_t zero_bytes, bool writable);
+bool add_file_page_tbl (struct file *file, int32_t ofs, uint8_t *upage, uint32_t read_bytes, uint32_t zero_bytes, bool writable);
+bool add_mmap_page_tbl (struct file *file, int32_t ofs, uint8_t *upage, uint32_t read_bytes, uint32_t zero_bytes, bool writable);
 bool stack_growth (void *unused_virtual_address);
 
 
