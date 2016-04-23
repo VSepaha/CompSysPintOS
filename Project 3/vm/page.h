@@ -13,7 +13,7 @@
 #define VM_PAGE_H
 
 #include <hash.h>
-#include "vm.frame.h"
+#include "vm/frame.h"
 
 
 #define FILE 0
