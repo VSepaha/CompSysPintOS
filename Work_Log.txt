@@ -45,3 +45,9 @@ of page.c, page.h, swap.c and swap.h.
 		c) growth of stack
 	- NOTE: there is a difference between "suppl_page_tbl_ent" and "suppl_page_table"
 	- Corresponding comments have been added
+	
+=======
+4/23/16
+@Vineet Sepaha
+	Worked on the compatibilty between mine and and kevin's implementation.
+	Working on process.c to see where to implement certain functions.
