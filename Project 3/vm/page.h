@@ -39,7 +39,7 @@ struct suppl_page_tbl_ent{
 	size_t read_bytes;
 	size_t zero_bytes;
 
-	size_t swap_index
+	size_t swap_index;
 
 	struct hash_elem element;
 
