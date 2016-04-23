@@ -25,9 +25,9 @@ struct frame_tbl_ent {
 // Used to initialize the frame table
 void frame_tbl_init(void); 
 // Used to add a framme to the table
-void add_frame_to_tbl (void *frame, struct sup_page_entry *spte);
+void add_frame_to_tbl (void *frame, struct suppl_page_tbl_ent *spte);
 // allocate memory for the frame
-void* frame_alloc(enum palloc_flags flags, struct sup_page_entry *spte);
+void* frame_alloc(enum palloc_flags flags, struct suppl_page_tbl_ent *spte);
 // free tbe frame passed as argument
 void free_frame(void *frame);
 // frame eviction policy

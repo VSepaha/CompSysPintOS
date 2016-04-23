@@ -13,7 +13,7 @@
 #define VM_PAGE_H
 
 #include <hash.h>
-#include "vm.frame.h"
+#include "vm/frame.h"
 
 
 #define FILE 0
@@ -39,7 +39,7 @@ struct suppl_page_tbl_ent{
 	size_t read_bytes;
 	size_t zero_bytes;
 
-	size_t swap_index
+	size_t swap_index;
 
 	struct hash_elem element;
 
