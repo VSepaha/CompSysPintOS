@@ -62,7 +62,7 @@ void* frame_alloc(enum palloc_flags flags, struct suppl_page_tbl_ent *spte) {
 		}
 
 	//add the frame to table which has been freed up
-      	frame_add_to_table(frame, spte);
+      	add_frame_to_tbl(frame, spte);
     }
 
     // return the frame
@@ -114,10 +114,10 @@ void* evict_frame (enum palloc_flags flags) {
       	if (!fte->spte->pinned) {
 	  		struct thread *t = fte->thread;
 
-	  		if (pagedir_is_accessed(t->pagedir, fte->spte->uva)) {
-	      		pagedir_set_accessed(t->pagedir, fte->spte->uva, false);
+	  		if (pagedir_is_accessed(t->pagedir, fte->spte->unused_virtual_address)) {
+	      		pagedir_set_accessed(t->pagedir, fte->spte->unused_virtual_address, false);
 	    	} else {
-	      		if (pagedir_is_dirty(t->pagedir, fte->spte->uva) ||
+	      		if (pagedir_is_dirty(t->pagedir, fte->spte->unused_virtual_address) ||
 					fte->spte->type == SWAP) {
 
 		  			if (fte->spte->type == MMAP) {
@@ -135,7 +135,7 @@ void* evict_frame (enum palloc_flags flags) {
 
 		      fte->spte->is_loaded = false;
 		      list_remove(&fte->elem);
-		      pagedir_clear_page(t->pagedir, fte->spte->uva);
+		      pagedir_clear_page(t->pagedir, fte->spte->unused_virtual_address);
 		      palloc_free_page(fte->frame);
 		      free(fte);
 		      return palloc_get_page(flags);
