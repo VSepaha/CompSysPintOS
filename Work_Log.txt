@@ -51,3 +51,7 @@ of page.c, page.h, swap.c and swap.h.
 @Vineet Sepaha
 	Worked on the compatibilty between mine and and kevin's implementation.
 	Working on process.c to see where to implement certain functions.
+	Also added a Makefile.build which needs to replace the Makefile.build in the pintos/src directory.
+	
+	
+	
