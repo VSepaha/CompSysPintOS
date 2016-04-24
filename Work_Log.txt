@@ -54,4 +54,10 @@ of page.c, page.h, swap.c and swap.h.
 	Also added a Makefile.build which needs to replace the Makefile.build in the pintos/src directory.
 	
 	
-	
+=======
+4/24/16
+@Vineet Sepaha
+	Multiple bug fixes in frame.c 
+	Added syscall.c to userprog and made an edit
+	Edited syscall.h 
+	Revealed many errors in page.c
