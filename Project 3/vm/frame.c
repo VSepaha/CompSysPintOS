@@ -121,11 +121,11 @@ void* evict_frame (enum palloc_flags flags) {
 					fte->spte->type == SWAP) {
 
 		  			if (fte->spte->type == MMAP) {
-		      			lock_acquire(&filesys_lock);
+		      			lock_acquire(&file_lock);
 		      			file_write_at(fte->spte->file, fte->frame,
 				    	fte->spte->read_bytes,
 				   		fte->spte->offset);
-		      			lock_release(&filesys_lock);
+		      			lock_release(&file_lock);
 		    		} else {
 		      			fte->spte->type = SWAP;
 		      			fte->spte->swap_index = swap_out(fte->frame);
