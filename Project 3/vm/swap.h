@@ -1,33 +1,24 @@
 #ifndef VM_SWAP_H
-
 #define VM_SWAP_H
 
+#include "devices/block.h"
+#include "threads/synch.h"
+#include "threads/vaddr.h"
+#include <bitmap.h>
 
+#define SWAP_FREE 0
+#define SWAP_IN_USE 1
 
-#include <stdbool.h>
+#define SECTORS_PER_PAGE (PGSIZE / BLOCK_SECTOR_SIZE)
 
-#include <stddef.h>
+struct lock swap_lock;
 
+struct block *swap_block;
 
+struct bitmap *swap_map;
 
-// Initializes swap table bitmap
+void swap_init (void);
+size_t swap_out (void *frame);
+void swap_in (size_t used_index, void* frame);
 
-void vm_swap_init (void);
-
-
-
-
-
-// Swap table operations
-
-void vm_swap_load (size_t, void *);
-
-size_t vm_swap_store (void *);
-
-void vm_swap_free (size_t);
-
-
-
-#endif 
-
-// vm/swap.h
+#endif /* vm/swap.h */
