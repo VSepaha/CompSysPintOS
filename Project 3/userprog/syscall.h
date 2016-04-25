@@ -9,6 +9,7 @@
 #define USER_VADDR_BOTTOM ((void*) 0x08048000)
 #define STACK_H 32
 
+//took file lock from syscall.c and added it here
 struct lock file_lock;
 
 void syscall_init (void);
