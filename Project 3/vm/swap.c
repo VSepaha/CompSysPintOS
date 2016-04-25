@@ -1,92 +1,64 @@
 #include "vm/swap.h"
-#include <stdio.h>
-#include <string.h>
-#include <bitmap.h>
-#include "devices/block.h"
-#include "threads/synch.h"
-#include "threads/palloc.h"
-#include "threads/vaddr.h"
 
-#define BLOCKS_PER_PAGE (PGSIZE / BLOCK_SECTOR_SIZE)
-
-static struct block *swap_block;
-static struct lock swap_lock;
-
-static struct bitmap *swap_map;
-static unsigned swap_size;
-
-// Initialise swap table
-void
-vm_swap_init ()
+void swap_init (void)
 {
   swap_block = block_get_role (BLOCK_SWAP);
-  lock_init (&swap_lock);  
-
-  swap_size = block_size (swap_block); 
-  swap_map = bitmap_create (swap_size);
-}
-
-// Loads a page from the swap to main memory
-void
-vm_swap_load (size_t index, void *addr)
-{
-  lock_acquire (&swap_lock);
- 
-  size_t ofs; 
-  for (ofs = 0; ofs < BLOCKS_PER_PAGE; ++ofs)
+  if (!swap_block)
     {
-      /* Make sure the index is valid. */
-      ASSERT (index < swap_size);
-      ASSERT ( bitmap_test (swap_map, index) );
-
-      block_read (swap_block, index, addr + ofs * BLOCK_SECTOR_SIZE);
-      ++index;
+      return;
     }
-
-  lock_release (&swap_lock); 
+  swap_map = bitmap_create( block_size(swap_block) / SECTORS_PER_PAGE );
+  if (!swap_map)
+    {
+      return;
+    }
+  bitmap_set_all(swap_map, SWAP_FREE);
+  lock_init(&swap_lock);
 }
 
 
-// Stores a page from main memory to swap disk
-size_t
-vm_swap_store (void *addr)
+size_t swap_out (void *frame)
 {
-  lock_acquire (&swap_lock);
-  size_t index = bitmap_scan_and_flip (swap_map, 0, BLOCKS_PER_PAGE, false);
-
-  // Makes sure that there is a page at the given index
-  ASSERT (index != BITMAP_ERROR);
-
-  size_t ofs, ind = index;
-  for (ofs = 0; ofs < BLOCKS_PER_PAGE; ++ofs)
+  if (!swap_block || !swap_map)
     {
-      // Makes sure that the index is valid
-      ASSERT (index < swap_size);
-      ASSERT ( bitmap_test (swap_map, ind) );
-
-      block_write (swap_block, ind, addr + ofs * BLOCK_SECTOR_SIZE);
-      ++ind;
+      PANIC("Need swap partition but no swap partition present!");
     }
-  lock_release (&swap_lock);
+  lock_acquire(&swap_lock);
+  size_t free_index = bitmap_scan_and_flip(swap_map, 0, 1, SWAP_FREE);
 
-  return index;
-} 
+  if (free_index == BITMAP_ERROR)
+    {
+      PANIC("Swap partition is full!");
+    }
 
-// Frees a swap frame. Sets the corresponding bit to zero
-void
-vm_swap_free (size_t index)
+  size_t i;
+  for (i = 0; i < SECTORS_PER_PAGE; i++)
+    { 
+      block_write(swap_block, free_index * SECTORS_PER_PAGE + i,
+		  (uint8_t *) frame + i * BLOCK_SECTOR_SIZE);
+    }
+  lock_release(&swap_lock);
+  return free_index;
+}
+
+void swap_in (size_t used_index, void* frame)
 {
-  lock_acquire (&swap_lock);
-  
-  size_t ofs;
-  for (ofs = 0; ofs < BLOCKS_PER_PAGE; ++ofs)
+  if (!swap_block || !swap_map)
     {
-      // Makes sure that the index is valid
-      ASSERT (index < swap_size);
-      ASSERT ( bitmap_test (swap_map, index) );
-
-      bitmap_reset (swap_map, index);
-      ++index;
+      return;
     }
-  lock_release (&swap_lock);
+  lock_acquire(&swap_lock);
+  if (bitmap_test(swap_map, used_index) == SWAP_FREE)
+    {
+      PANIC ("Trying to swap in a free block! Kernel panicking.");
+    }
+  bitmap_flip(swap_map, used_index);
+
+  size_t i;
+  for (i = 0; i < SECTORS_PER_PAGE; i++)
+    {
+      block_read(swap_block, used_index * SECTORS_PER_PAGE + i,
+		 (uint8_t *) frame + i * BLOCK_SECTOR_SIZE);
+    }
+  lock_release(&swap_lock);
 }
