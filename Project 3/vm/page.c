@@ -88,7 +88,7 @@ static void page_function (struct hash_elem *e, void *aux UNUSED)
  * @return void
  */
 void page_table_init (struct hash *suppl_page_table){
-	hash_init(suppl_page_table, page_hash, page_compare_function, NULL);
+	hash_init(suppl_page_table, page_hash, page_compare, NULL);
 }
 
 /*
@@ -116,12 +116,12 @@ struct suppl_page_tbl_ent* get_spte (void * unused_virtual_address){
 	// pg_round_down is a built in function located in /src/threads/vaddr.h
 	spte.unused_virtual_address = pg_round_down(unused_virtual_address);
 
-	struct hash_elem *e = hash_find(&thread_curren() ->spte, &spte.elem);
+	struct hash_elem *e = hash_find(&thread_current() ->spte, &spte.elem);
 	if(!e)
 	{
 		return NULL;
 	}
-	return hash_entry(e, struct suppl_page_tbl_ent, elem);
+	return hash_entry(e, struct suppl_page_tbl_ent, element);
 }
 
 /*

@@ -53,20 +53,23 @@ of page.c, page.h, swap.c and swap.h.
 	Working on process.c to see where to implement certain functions.
 	Also added a Makefile.build which needs to replace the Makefile.build in the pintos/src directory.
 	
-<<<<<<< HEAD
-=======
-4/23/16
-=======
-	
 =======
 4/24/16
->>>>>>> 694244dafe2149eb439580d5de686fb420af94e0
 @Vineet Sepaha
 	Multiple bug fixes in frame.c 
 	Added syscall.c to userprog and made an edit
 	Edited syscall.h 
 	Revealed many errors in page.c
-<<<<<<< HEAD
-	
+
 =======
->>>>>>> 694244dafe2149eb439580d5de686fb420af94e0
+4/25/16
+@Kevin Wu
+	- Revised page.c and page.h due to new found errors
+	- errors are still present...
+
+=======
+4/26/16
+@Kevin Wu
+	- Continued revising page.c and page.h
+	- Further revision is needed...
+	- Will make changes to thread.h in the future
