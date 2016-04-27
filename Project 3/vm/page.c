@@ -22,6 +22,8 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h" 
 
+#include "userprog/syscall.h"
+
 #include "vm/frame.h"
 #include "vm/page.h"
 #include "vm/swap.h"
@@ -31,7 +33,7 @@
  *
  * @return location of an Unused Virtual Address
  */
-static unsigned page_hash (const struct hash_element *e, void *aux UNUSED){
+static unsigned page_hash (const struct hash_elem *e, void *aux UNUSED){
 	struct suppl_page_tbl_ent *spte = hash_entry(e, struct suppl_page_tbl_ent, element);
 
 	return hash_int((int) spte -> unused_virtual_address);
@@ -42,8 +44,8 @@ static unsigned page_hash (const struct hash_element *e, void *aux UNUSED){
  *
  * @return TRUE if first elem is less than second elem, FALSE otherwise
  */
- static bool page_compare (const struct hash_element *a,
- 								 const struct hash_element *b,
+ static bool page_compare (const struct hash_elem *a,
+ 								 const struct hash_elem *b,
  								 void *aux UNUSED)
  {
  	struct suppl_page_tbl_ent *sa = hash_entry(a, struct suppl_page_tbl_ent, element);
@@ -63,13 +65,13 @@ static unsigned page_hash (const struct hash_element *e, void *aux UNUSED){
  * @return void
  */
 
-static void page_function (struct hash_element *e, void *aux UNUSED)
+static void page_function (struct hash_elem *e, void *aux UNUSED)
 {
-	struct suppl_page_tbl_ent *spte = hash_entry(e,struct suppl_page_tbl_ent, elem);
+	struct suppl_page_tbl_ent *spte = hash_entry(e,struct suppl_page_tbl_ent, element);
 
 	if(spte -> is_loaded)
 	{
-		frame_free(pagedir_get_page(thread_current() -> pagedir, spte -> unused_virtual_address));
+		free_frame(pagedir_get_page(thread_current() -> pagedir, spte -> unused_virtual_address));
 		pagedir_clear_page(thread_current() -> pagedir, spte -> unused_virtual_address);
 	}
 	free(spte);
@@ -114,7 +116,7 @@ struct suppl_page_tbl_ent* get_spte (void * unused_virtual_address){
 	// pg_round_down is a built in function located in /src/threads/vaddr.h
 	spte.unused_virtual_address = pg_round_down(unused_virtual_address);
 
-	struct hash_element *e = hash_find(&thread_curren() ->spte, &spte.elem);
+	struct hash_elem *e = hash_find(&thread_curren() ->spte, &spte.elem);
 	if(!e)
 	{
 		return NULL;
@@ -170,7 +172,7 @@ bool load_swap (struct suppl_page_tbl_ent *spte)
 	}
 	if(!install_page(spte -> unused_virtual_address, frame, spte -> writable))
 	{
-		frame_free(frame);
+		free_frame(frame);
 		return false;
 	}
 
@@ -202,22 +204,22 @@ bool load_file (struct suppl_page_tbl_ent *spte)
 	}
 	if(spte -> read_bytes > 0)
 	{
-		lock_acquire(&filesys_lock);
+		lock_acquire(&file_lock);
 		if((int) spte -> read_bytes != file_read_at(spte -> file, frame,
 													spte -> read_bytes,
 													spte -> offset))
 		{
-			lock_release(&filesys_lock);
-			frame_free(frame);
+			lock_release(&file_lock);
+			free_frame(frame);
 			return false;
 		}
-		lock_release(&filesys_lock);
+		lock_release(&file_lock);
 		memset(frame + spte -> read_bytes, 0, spte -> zero_bytes);
 	}
 
 	if(!install_page(spte -> unused_virtual_address, frame, spte -> writable))
 	{
-		frame_free(frame);
+		free_frame(frame);
 		return false;
 	}
 
@@ -329,7 +331,7 @@ bool stack_growth (void *unused_virtual_address)
   if (!install_page(spte->unused_virtual_address, frame, spte->writable))
     {
       free(spte);
-      frame_free(frame);
+      free_frame(frame);
       return false;
     }
 
@@ -340,6 +342,5 @@ bool stack_growth (void *unused_virtual_address)
 
   return (hash_insert(&thread_current() -> suppl_page_table, &spte -> elem) == NULL);
 }
-
 
 
