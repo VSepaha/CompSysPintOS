@@ -73,3 +73,33 @@ of page.c, page.h, swap.c and swap.h.
 	- Continued revising page.c and page.h
 	- Further revision is needed...
 	- Will make changes to thread.h in the future
+
+4/30/16
+@Kevin Wu
+	- Revisions made to page.c and page.h
+	- Added additional lines to /src/userprog/process.c
+	- Added additional lines to /src/threads/thread.h
+	- Revisions made to syscall.c
+	- Additional lines added to syscall.h
+
+	******************************************************
+	- A LOT of work is needed to be done on syscall.c
+		- I don't wanna do it :<
+		- syscalls mmap and munmap need to be added in
+		- mmap and munmap functions need to be declared...
+		- existing syscalls need to be redefined...
+		- For NOW, added basic declarations to syscall.c
+	- Will do this portion if no one else is willing
+	******************************************************
+
+	UPDATE:
+		- sycalls mmap and munmap added to syscall handler
+		- functions mmap and munmap have been declared
+		- corresponding appropriate names have been implemented
+
+	TO DO:
+		- existing syscalls need to be redefined
+		- the names of some functions are mismatched...
+
+	- Errors are still persistent
+		- Personally, I don't believe we are going to be able to get this project to even compile...

@@ -23,6 +23,8 @@
 #include "threads/vaddr.h" 
 
 #include "userprog/syscall.h"
+#include "userprog/pagedir.h"
+#include "userprog/process.h"
 
 #include "vm/frame.h"
 #include "vm/page.h"
@@ -116,7 +118,7 @@ struct suppl_page_tbl_ent* get_spte (void * unused_virtual_address){
 	// pg_round_down is a built in function located in /src/threads/vaddr.h
 	spte.unused_virtual_address = pg_round_down(unused_virtual_address);
 
-	struct hash_elem *e = hash_find(&thread_current() ->spte, &spte.elem);
+	struct hash_elem *e = hash_find(&thread_current() ->spt, &spte.elem);
 	if(!e)
 	{
 		return NULL;

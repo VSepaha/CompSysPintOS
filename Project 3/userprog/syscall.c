@@ -11,12 +11,43 @@
 #include "threads/malloc.h"
 #include "devices/shutdown.h"
 
+//--------------------------//
+#include "devices/input.h"
+#include "devices/shutdown.h"
+#include "filesys/filesys.h"
+#include "threads/synch.h"
+#include "userprog/pagedir.h"
+#include "userprog/process.h"
+#include "vm/frame.h"
+#include "vm/page.h"
+
+//---------------------------//
+
 #define ARG0 (*(esp + 1))
 #define ARG1 (*(esp + 2))
 #define ARG2 (*(esp + 3))
 #define ARG3 (*(esp + 4))
 #define ARG4 (*(esp + 5))
 #define ARG5 (*(esp + 6))
+
+/*
+ * The following was added in...
+ */
+#define MAX_ARGS 3
+
+void get_arg(struct intr_frame *);
+struct suppl_page_tbl_ent* check_valid_ptr(const void *vaddr, void* esp);
+void check_valid_buffer (void* buffer, unsigned size, void* esp, bool to_write);
+void check_valid_string(const void* str, void* esp);
+void check_write_permission(struct suppl_page_tbl_ent *spte);
+void unpin_ptr(void* vaddr);
+void unpin_string(void* str);
+void unpin_buffer(void* buffer, unsigned size);
+
+
+/*
+ * End of elements added in...
+ */
 
 //removed and put into syscall.h
 // struct lock file_lock;
@@ -57,7 +88,7 @@ halt (void)
 
 void 
 exit (int status)
-{	
+{ 
   thread_current ()->proc->exit = status;
   thread_exit ();
 }
@@ -232,6 +263,53 @@ close (int fd)
   lock_release(&file_lock);
 }
 
+/*
+ * The following is added in....
+ */
+
+int mmap (int fd, void *addr)
+{
+  struct file *old_file = process_get_file(fd);
+  if (!old_file || !is_user_vaddr(addr) || addr < USER_VADDR_BOTTOM ||
+      ((uint32_t) addr % PGSIZE) != 0)
+    {
+      return ERROR;
+    }
+  struct file *file = file_reopen(old_file);
+  if (!file || file_length(old_file) == 0)
+    {
+      return ERROR;
+    }
+  thread_current()->mapid++;
+  int32_t ofs = 0;
+  uint32_t read_bytes = file_length(file);
+  while (read_bytes > 0)
+    {
+      uint32_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
+      uint32_t page_zero_bytes = PGSIZE - page_read_bytes;
+      if (!add_mmap_to_page_table(file, ofs,
+          addr, page_read_bytes, page_zero_bytes))
+  {
+    munmap(thread_current()->mapid);
+    return ERROR;
+  }
+      read_bytes -= page_read_bytes;
+      ofs += page_read_bytes;
+      addr += PGSIZE;
+  }
+  return thread_current()->mapid;
+}
+
+void munmap (int mapping)
+{
+  process_remove_mmap(mapping);
+}
+
+/*
+ * End of elements added in...
+ */
+
+
 static void
 syscall_handler (struct intr_frame *f) 
 {
@@ -280,10 +358,237 @@ syscall_handler (struct intr_frame *f)
       case SYS_CLOSE:
         close ((int) ARG0);
         break;
+  /*
+   * The following is added in...
+   */
+  
+    case SYS_MMAP:
+      {
+  get_arg(f, &arg[0], 2);
+  f->eax = mmap(arg[0], (void *) arg[1]);
+  break;
+      }
+    case SYS_MUNMAP:
+      {
+  get_arg(f, &arg[0], 1);
+  munmap(arg[0]);
+  break;
+  /*
+   * End of elements added in...
+   */
       default:
         printf ("Invalid syscall!\n");
         thread_exit();
     }
+} 
+
+/*
+ * Everything beyond this point is added in...
+ */
+
+void check_write_permission (strut suppl_page_tbl_ent *spte)
+{
+  if(!spte -> writable)
+  {
+    exit(ERROR);  
+  }
 }
+
+struct suppl_page_tbl_ent* check_valid_ptr(const void *vaddr, void* esp)
+{
+  if (!is_user_vaddr(vaddr) || vaddr < USER_VADDR_BOTTOM)
+    {
+      exit(ERROR);
+    }
+  bool load = false;
+  struct suppl_page_tbl_ent *spte = get_spte((void *) vaddr);
+  if (spte)
+    {
+      load_page(spte);
+      load = spte->is_loaded;
+    }
+  else if (vaddr >= esp - STACK_H)
+    {
+      load = stack_growth((void *) vaddr);
+    }
+  if (!load)
+    {
+      exit(ERROR);
+    }
+  return spte;
+}
+
+struct child_process* add_child_process (int pid)
+{
+  struct child_process* cp = malloc(sizeof(struct child_process));
+  if (!cp)
+    {
+      return NULL;
+    }
+  cp -> pid = pid;
+  cp -> load = NOT_LOADED;
+  cp -> wait = false;
+  cp -> exit = false;
+  sema_init(&cp->load_sema, 0);
+  sema_init(&cp->exit_sema, 0);
+  list_push_back(&thread_current()->child_list,
+     &cp->elem);
+  return cp;
+}
+
+struct child_process* get_child_process (int pid)
+{
+  struct thread *t = thread_current();
+  struct list_elem *e;
+
+  for (e = list_begin (&t->child_list); e != list_end (&t->child_list);
+       e = list_next (e))
+        {
+          struct child_process *cp = list_entry (e, struct child_process, elem);
+          if (pid == cp->pid)
+      {
+        return cp;
+      }
+        }
+  return NULL;
+}
+
+void remove_child_process (struct child_process *cp)
+{
+  list_remove(&cp->elem);
+  free(cp);
+}
+
+void remove_child_processes (void)
+{
+  struct thread *t = thread_current();
+  struct list_elem *next, *e = list_begin(&t->child_list);
+
+  while (e != list_end (&t->child_list))
+    {
+      next = list_next(e);
+      struct child_process *cp = list_entry (e, struct child_process,
+               elem);
+      list_remove(&cp->elem);
+      free(cp);
+      e = next;
+    }
+}
+
+void get_arg (struct intr_frame *f, int *arg, int n)
+{
+  int i;
+  int *ptr;
+  for (i = 0; i < n; i++)
+    {
+      ptr = (int *) f -> esp + i + 1;
+      check_valid_ptr((const void *) ptr, f -> esp);
+      arg[i] = *ptr;
+    }
+}
+
+void check_valid_buffer (void* buffer, unsigned size, void* esp,
+       bool to_write)
+{
+  unsigned i;
+  char* local_buffer = (char *) buffer;
+  for (i = 0; i < size; i++)
+    {
+      struct suppl_page_tbl_ent *spte = check_valid_ptr((const void*)
+                local_buffer, esp);
+      if (spte && to_write)
+  {
+    if (!spte->writable)
+      {
+        exit(ERROR);
+      }
+  }
+      local_buffer++;
+    }
+}
+
+void check_valid_string (const void* str, void* esp)
+{
+  check_valid_ptr(str, esp);
+  while (* (char *) str != 0)
+    {
+      str = (char *) str + 1;
+      check_valid_ptr(str, esp);
+    }
+}
+
+void unpin_ptr (void* vaddr)
+{
+  struct suppl_page_tbl_ent *spte = get_spte(vaddr);
+  if (spte)
+    {
+      spte->pinned = false;
+    }
+}
+
+void unpin_string (void* str)
+{
+  unpin_ptr(str);
+  while (* (char *) str != 0)
+    {
+      str = (char *) str + 1;
+      unpin_ptr(str);
+    }
+}
+
+void unpin_buffer (void* buffer, unsigned size)
+{
+  unsigned i;
+  char* local_buffer = (char *) buffer;
+  for (i = 0; i < size; i++)
+    {
+      unpin_ptr(local_buffer);
+      local_buffer++;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
