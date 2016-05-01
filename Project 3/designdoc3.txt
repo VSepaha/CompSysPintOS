@@ -55,6 +55,11 @@ Resources
 >> A4: When two user processes both need a new frame at the same time,
 >> how are races avoided?
 
+When two or more processes need a new frame, they call the function
+frame_alloc(). Of course, this would causerace conditions.In order to 
+avoid these race conditions, we used a frame table lock which isimplemented 
+whenever a frame is added or evicted.
+
 ---- RATIONALE ----
 
 >> A5: Why did you choose the data structure(s) that you did for
