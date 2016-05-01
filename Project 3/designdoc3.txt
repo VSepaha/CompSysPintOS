@@ -84,7 +84,7 @@ Resources
 >> how are races avoided?
 
 When two or more processes need a new frame, they call the function
-frame_alloc(). Of course, this would causerace conditions.In order to 
+frame_alloc(). Of course, this would causerace conditions. In order to 
 avoid these race conditions, we used a frame table lock which isimplemented 
 whenever a frame is added or evicted.
 
