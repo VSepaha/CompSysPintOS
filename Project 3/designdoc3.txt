@@ -46,9 +46,37 @@ Resources
 >> A2: In a few paragraphs, describe your code for locating the frame,
 >> if any, that contains the data of a given page.
 
+	One instance in which we would need to locate the frame is when
+	a page fault occurs. This is because at this point the OS needs to 
+	search the physical memory (since it isn't located in virtual memory).
+
+	The first step would be to find the supplemental page table entry via
+	using the virtual address. The virtual address will be rounded down
+	to its respective page in memory. It will then be hashed to find
+	the correct supplemental page table entry.
+
+	Next, a frame is needed for the corresponding supplemental page table
+	entry. Our code will then check if the a new frame is available; if there
+	isn't a frame free at the time, a frame will be evicted to make room.
+
+	Afterwards, the virtual address is mapped to the physical memory of the
+	frame address.
+
+	Depending on where the virtual address is located, different actions
+	are taken accordingly. If the virtual address is from a file or a map,
+	then the data is read in. If the virtual address is from swap, the data
+	is read in for the swapping parition.
+
+	As such, the boolean variable "is_loaded" within the supplemental
+	page table struct is then set to "true" in order to indicate that
+	it is indeed loaded.
+
+
 >> A3: How does your code coordinate accessed and dirty bits between
 >> kernel and user virtual addresses that alias a single frame, or
 >> alternatively how do you avoid the issue?
+
+
 
 ---- SYNCHRONIZATION ----
 
