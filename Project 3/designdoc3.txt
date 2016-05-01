@@ -43,6 +43,12 @@ Resources
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
 ---- ALGORITHMS ----
+<<<<<<< HEAD
+=======
+
+DONE
+DONE
+>>>>>>> 744edcf460369ee8f878c57c0dc5317fa823710a
 DONE
 >> A2: In a few paragraphs, describe your code for locating the frame,
 >> if any, that contains the data of a given page.
@@ -91,8 +97,39 @@ whenever a frame is added or evicted.
 
 ---- RATIONALE ----
 
+DONE
+DONE
+DONE
+DONE
 >> A5: Why did you choose the data structure(s) that you did for
 >> representing virtual-to-physical mappings?
+
+A) Within frame_tbl_ent there is a variable called "spte". spte is an 
+abbreviation for supplemental page table entry. This is used whenever 
+we are locating a valid virtual address and whenever we need to evict 
+a corresponding frame.
+
+B) Within frame_tbl_ent there is a struct "thread". The thread's 
+purpose is to use it to make a comparison with other threads. 
+This helps ensure synchronization.
+
+C) Within suppl_page_tbl_ent there is a boolean variable named "pinned".
+ This value is true whenever the kernel is acquiring data in the supplemental 
+ page table entry. This is to ensure that whenever a thread is currently 
+ accessing the frame it will not be evicted. This is necessary in order to 
+ prevent errors duing the critical sections and stopping the kernel from crashing.
+
+D) Within suppl_page_tbl_ent there is a void pointer called "unused_virtual_address". 
+As in the previous project, this is used so the kernel only accesses 
+unassociated data within the virtual memory. As such, there is no need to 
+worry about alias problems with access and dirty bits.
+
+E) Within suppl_page_tbl_ent there is a boolean variable named "is_loaded". 
+As stated previously, the purpose of this variable is to indicate if the 
+supplemental page table entry is already in memory. This is crucial to prevent 
+page faults when syscalls are made referring to the page.
+
+
 
 		       PAGING TO AND FROM DISK
 		       =======================
