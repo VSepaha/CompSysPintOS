@@ -134,9 +134,21 @@ page faults when syscalls are made referring to the page.
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
 ---- ALGORITHMS ----
-VINEET
+DONE
 >> B2: When a frame is required but none is free, some frame must be
 >> evicted.  Describe your code for choosing a frame to evict.
+
+We have created a frame eviction policy to perform this.
+We start off by iterating through the frame table, ignoring the entries
+which are being used by the kernel. If the frame's access bit is set to
+true, we set it to false. Otherwise, since the access bit is false, it 
+will be swapped out. If the page has the dirty bit set or is a stack page,
+we write to the its file or we swap it out to the disk. The swap map scans
+for free sectors when swapping out to the disk. If it cannot find any free
+sectors, it panics. If there is one available, it writes into the the 
+corresponding sector and sets the page's swap index. Next we set the page's
+is_loaded flag to false and we deallocate the memory (remove the frame from
+the table and free the memory). Lastly, we return palloc_get_page(flags).
 
 DONE
 >> B3: When a process P obtains a frame that was previously used by a
@@ -150,11 +162,12 @@ to the current thread of the spte the frame is being used for. The only
 problem is that since we are deallocation and reallocating memory, it
 is inefficient.
 
+VINEET
 >> B4: Explain your heuristic for deciding whether a page fault for an
 >> invalid virtual address should cause the stack to be extended into
 >> the page that faulted.
 
----- SYNCHRONIZATION ----
+---- SYNCHRONIZATION ---- KEVIN
 
 >> B5: Explain the basics of your VM synchronization design.  In
 >> particular, explain how it prevents deadlock.  (Refer to the
@@ -178,7 +191,7 @@ is inefficient.
 >> gracefully handle attempted accesses to invalid virtual addresses?
 
 ---- RATIONALE ----
-
+VINEET
 >> B9: A single lock for the whole VM system would make
 >> synchronization easy, but limit parallelism.  On the other hand,
 >> using many locks complicates synchronization and raises the
