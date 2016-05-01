@@ -28,6 +28,7 @@ In the vm folder:
 >> Please cite any offline or online sources you consulted while
 >> preparing your submission, other than the Pintos documentation, course
 >> text, lecture notes, and course staff.
+
 Resources
 - http://courses.cs.vt.edu/~cs3204/fall2009/pintos-vt-local/Project3Session.pdf
 - http://csl.skku.edu/uploads/CSE3008F09/project3.pdf
@@ -42,7 +43,7 @@ Resources
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
 ---- ALGORITHMS ----
-
+DONE
 >> A2: In a few paragraphs, describe your code for locating the frame,
 >> if any, that contains the data of a given page.
 
@@ -71,7 +72,7 @@ Resources
 	page table struct is then set to "true" in order to indicate that
 	it is indeed loaded.
 
-
+WE DONT KNOW THIS YET
 >> A3: How does your code coordinate accessed and dirty bits between
 >> kernel and user virtual addresses that alias a single frame, or
 >> alternatively how do you avoid the issue?
@@ -79,7 +80,7 @@ Resources
 
 
 ---- SYNCHRONIZATION ----
-
+DONE
 >> A4: When two user processes both need a new frame at the same time,
 >> how are races avoided?
 
@@ -103,13 +104,22 @@ whenever a frame is added or evicted.
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
 ---- ALGORITHMS ----
-
+VINEET
 >> B2: When a frame is required but none is free, some frame must be
 >> evicted.  Describe your code for choosing a frame to evict.
 
+
+REPHRASE
 >> B3: When a process P obtains a frame that was previously used by a
 >> process Q, how do you adjust the page table (and any other data
 >> structures) to reflect the frame Q no longer has?
+
+During our frame eviction policy, the current frame is freed and a new
+frame is allocated so there no reference to the removed frame. For this
+new frame, we set the thread to the current thread and we set the spte
+to the current thread of the spte the frame is being used for. The only
+problem is that since we are deallocation and reallocating memory, it
+is inefficient.
 
 >> B4: Explain your heuristic for deciding whether a page fault for an
 >> invalid virtual address should cause the stack to be extended into
