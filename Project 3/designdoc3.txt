@@ -43,12 +43,9 @@ Resources
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
 ---- ALGORITHMS ----
-<<<<<<< HEAD
+
 =======
 
-DONE
-DONE
->>>>>>> 744edcf460369ee8f878c57c0dc5317fa823710a
 DONE
 >> A2: In a few paragraphs, describe your code for locating the frame,
 >> if any, that contains the data of a given page.
@@ -96,10 +93,6 @@ avoid these race conditions, we used a frame table lock which isimplemented
 whenever a frame is added or evicted.
 
 ---- RATIONALE ----
-
-DONE
-DONE
-DONE
 DONE
 >> A5: Why did you choose the data structure(s) that you did for
 >> representing virtual-to-physical mappings?
