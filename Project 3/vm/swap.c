@@ -1,19 +1,11 @@
 #include "vm/swap.h"
-
 #include <stdio.h>
-
 #include <string.h>
-
 #include <bitmap.h>
-
 #include "devices/block.h"
-
 #include "threads/synch.h"
-
 #include "threads/palloc.h"
-
 #include "threads/vaddr.h"
-
 
 //Initializes swap table
 void start_swap (void)
@@ -54,7 +46,6 @@ void swap_in (size_t used_index, void* frame)
     }
   lock_release(&swap_lock); //Releases the swap lock
 }
-
 
 //switches from main memory to swap disk
 size_t swap_out (void *frame)
