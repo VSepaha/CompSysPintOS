@@ -269,8 +269,26 @@ VINEET
 >> memory subsystem.  Explain how the page fault and eviction
 >> processes differ between swap pages and other pages.
 
+So when it comes to Memory Mapped files we used the similar concept that was 
+used for executable files. They are basically lazy loaded and acts like any
+executable file would. They are first read from the file and then loaded
+into physical memory accordingly. One of the differences between executable
+files and memory mapped files is that they must be written back to the
+original corresponding file, not to swap, when eviction and mumap are
+occuring. While in munmap, the thread has to iterate through it's
+corresponding Memory Map list, write dirty pages on the disk and then close
+Memory Map file after the clean up. So during process exit, all of the
+Memory Mapped files are munmapped and all of the other pages are trashed.
+
 >> C3: Explain how you determine whether a new file mapping overlaps
 >> any existing segment.
+
+When determining whether a new file mapping overlaps any existing you have
+to check several things. The file is mapped page by page to it's address and 
+for each page it's spte is added onto the thread's hast table. Now, if the
+hash table finds out that there are duplicate entries, that means that the
+new file overlaps with an existing statement. And thus all the previos
+mappings based on the new files are unmapped.
 
 ---- RATIONALE ----
 
@@ -280,6 +298,16 @@ VINEET
 >> that much of their implementation can be shared.  Explain why your
 >> implementation either does or does not share much of the code for
 >> the two situations.
+
+The implementation does share some of the code for both situations because 
+like mentioned above both executable files and memory mapped files are
+loaded in the same way. They both make use of the load file function when
+their pages are in the process of being loaded into physical memory.
+Furthermore, in fram evication, memory mapped dirty pages are just written
+to their corresponding files where as the clean memoery mapped dirty pages
+are not written. So this makes it a bit easier when it comes to implementing
+memory mapped files since it's essentially an extension of the executables
+class. 
 
 			   SURVEY QUESTIONS
 			   ================
