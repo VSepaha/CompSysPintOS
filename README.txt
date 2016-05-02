@@ -65,4 +65,11 @@ MAKE SURE TO WORK on the project
 - Split up the rest of the work.
 - For next time, each person should read all the implementation and have questions
 ready if needed. Also we should have started implementing the parts which we divided.
+
+5/2/2016
+- Fix errors in the VM files
+- Do renaming of function if necessary
+- Divide up the rest of the project 
+- Divide up rest of the design document
+- See if it is necessary to meet up tomorrow
  
