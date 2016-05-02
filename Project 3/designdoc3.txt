@@ -75,11 +75,17 @@ DONE
 	page table struct is then set to "true" in order to indicate that
 	it is indeed loaded.
 
-VINEET
+DONE
 >> A3: How does your code coordinate accessed and dirty bits between
 >> kernel and user virtual addresses that alias a single frame, or
 >> alternatively how do you avoid the issue?
 
+For our implementation, the accesses to the user stack is done through
+the user virtual addresses in the kernel. The user pointers in syscall.c
+and exception.c provdie user accesses. From the user addess we are able to 
+find the spte and, if necessary, the page is loaded in. Because of this 
+implementation, only the user virtual address indicated in the spt can
+use the kernel virtual memory address.
 
 
 ---- SYNCHRONIZATION ----
