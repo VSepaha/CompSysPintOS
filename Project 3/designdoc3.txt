@@ -174,21 +174,70 @@ VINEET
 >> textbook for an explanation of the necessary conditions for
 >> deadlock.)
 
+Our implementation is based around the boolean variable "pinned". 
+As previously stated, the pinned boolean variable is responsible for 
+telling the kernel whether or not a particular virtual address is being 
+accessed/been used. With that in mind, when the kernel uses the supplmental 
+page table entry when a page fault occurs or through a syscall, the 
+supplemental page table entry's pinned variable is checked. If the variable 
+is set to true, then our frame eviction policy ignores it and won't disturb 
+it during its critical section. On the other hand, if the pinned variable is 
+set to false it gets evicted promptly (unless they pay the rent!). In the 
+instance where the pinned variable is set to true, after the kernel is done 
+accessing the data required, it is reverted to false. Since our system avoids 
+entering anothers critical section, we essentially avoid deadlocks presented 
+by waiting for a section to complete.
+
 >> B6: A page fault in process P can cause another process Q's frame
 >> to be evicted.  How do you ensure that Q cannot access or modify
 >> the page during the eviction process?  How do you avoid a race
 >> between P evicting Q's frame and Q faulting the page back in?
+
+As was stated previously, and for numerous times, our implementation 
+revolves around the boolean variable "pinned". Depending on the value 
+of "pinned" different corresponding actions are taken. Let's assume that 
+process Q has been accessed; Q's pinned variable is therefore set to true.
+When it is process P's turn to check the supplemental page table, it will 
+ignore Q until Q is finished; when Q is finished the pinned variable will 
+be set to false. 
+
+In regards to the scenario where a race condition between P evicting 
+Q's frame and Q faulting the page back in, this is prevented through 
+the usage of page faults. In such a particular situation, Q's kernel 
+thread will page fault and will go to the supplemental page table entry 
+and reloads the frame.
 
 >> B7: Suppose a page fault in process P causes a page to be read from
 >> the file system or swap.  How do you ensure that a second process Q
 >> cannot interfere by e.g. attempting to evict the frame while it is
 >> still being read in?
 
+Once again, we ensure this type of behavior doesn't occur through the 
+usage of the boolean variable "pinned". While any process is being accessed, 
+the pinned variable is set to true. Whenever this variable is set to true, 
+no operations may occur to interrupt its critical section.
+
+There is a situation where there is a slight miscommunication. That 
+instance is when process Q is attempting to evict a frame while at the 
+same time process P is trying to pin it. At such an occurance, Q will 
+simply page fault and reloads the memory.
+
 >> B8: Explain how you handle access to paged-out pages that occur
 >> during system calls.  Do you use page faults to bring in pages (as
 >> in user programs), or do you have a mechanism for "locking" frames
 >> into physical memory, or do you use some other design?  How do you
 >> gracefully handle attempted accesses to invalid virtual addresses?
+
+During system calls, the kernel will manually load in the pages that 
+have not been loaded in based on the boolean variable pinned. This is 
+to ensure that we do not evict frames that are currently being accessed. 
+Page fault is also heavily used within the kernel to fault pages when it 
+is needed.
+
+Accesess to invalid virtual addresses are dealt with in a simple manner: 
+kill the process. As such, when the process is killed, all the pages associated 
+with it are evicted in order to free memory space.
+
 
 ---- RATIONALE ----
 VINEET
