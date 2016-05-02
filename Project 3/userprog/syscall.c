@@ -386,7 +386,7 @@ syscall_handler (struct intr_frame *f)
  * Everything beyond this point is added in...
  */
 
-void check_write_permission (strut suppl_page_tbl_ent *spte)
+void check_write_permission (struct suppl_page_tbl_ent *spte)
 {
   if(!spte -> writable)
   {
