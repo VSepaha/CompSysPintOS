@@ -51,7 +51,7 @@ void* frame_alloc(enum palloc_flags flags, struct suppl_page_tbl_ent *spte) {
     } else {
     // when no frame is free, a frame must be made free through eviction algo
      	while (!frame) {
-			frame = frame_evict(flags);
+			frame = evict_frame(flags);
 		  	lock_release(&frame_tbl_lock);
 		}
 
@@ -109,39 +109,51 @@ void* evict_frame (enum palloc_flags flags) {
 	struct list_elem *e = list_begin(&frame_tbl_list);
 
 	while (true) {
+		// get the frame table entry
     	struct frame_tbl_ent *fte = list_entry(e, struct frame_tbl_ent, elem);
 
+    	// check if the frame table entry is being used by the kernel
       	if (!fte->spte->pinned) {
+      		// assign the current thread to the frame table entry thread
 	  		struct thread *t = fte->thread;
 
+	  		// check to see if the virtual address has been accessed
 	  		if (pagedir_is_accessed(t->pagedir, fte->spte->unused_virtual_address)) {
+	  			// set the accessed bit to false if it is true
 	      		pagedir_set_accessed(t->pagedir, fte->spte->unused_virtual_address, false);
+
 	    	} else {
+	    		// check to if the pte has been modified
 	      		if (pagedir_is_dirty(t->pagedir, fte->spte->unused_virtual_address) ||
 					fte->spte->type == SWAP) {
 
+	      			// write into the pte
 		  			if (fte->spte->type == MMAP) {
-		      			lock_acquire(&file_lock);
+		      			lock_acquire(&file_lock); 
+
 		      			file_write_at(fte->spte->file, fte->frame,
-				    	fte->spte->read_bytes,
-				   		fte->spte->offset);
+				    	fte->spte->read_bytes, fte->spte->offset);
+
 		      			lock_release(&file_lock);
 		    		} else {
+		    			// swap out
 		      			fte->spte->type = SWAP;
 		      			fte->spte->swap_index = swap_out(fte->frame);
 		    		}
 
 				}
 
+			// deallocation of memory
 		      fte->spte->is_loaded = false;
-		      list_remove(&fte->elem);
+		      list_remove(&fte->elem); // remove the frame entry from the list
 		      pagedir_clear_page(t->pagedir, fte->spte->unused_virtual_address);
-		      palloc_free_page(fte->frame);
-		      free(fte);
+		      palloc_free_page(fte->frame); // free the frame
+		      free(fte); // free the frame table entry
 		      return palloc_get_page(flags);
 		    }
 
 		}
+		// go to the next element in the frame table
      	e = list_next(e);
     	if (e == list_end(&frame_tbl_list)) {
       		e = list_begin(&frame_tbl_list);
