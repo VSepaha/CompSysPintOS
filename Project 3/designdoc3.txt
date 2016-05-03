@@ -47,10 +47,10 @@ vm/frame.h :
 	struct frame_tbl_list; // Used as the frame table
 	struct frame_tbl_lock; // Used for the lock of the frame table
 	struct frame_tbl_ent {
-		void *frame; 
-		struct thread *thread;
-		struct suppl_page_tbl_ent *spte;
-		struct list_elem elem;
+		void *frame; // Pointer to the physical memory frame
+		struct thread *thread; // Thread using the memory frame
+		struct suppl_page_tbl_ent *spte; // Pointer to spte using physical frame
+		struct list_elem elem; // list element
 	}
 }
 Purpose: This structure is used to hold the frame table entry
