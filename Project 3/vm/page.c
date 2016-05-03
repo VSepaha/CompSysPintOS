@@ -105,10 +105,9 @@ void page_table_rm (struct hash *suppl_page_table){
 }
 
 /*
- * Function to remove a page table
+ * Function to retrieve the supplemental page table entry
+ * based on the unused virtual address
  * 
- * Uses hash_destroy, built in function located in <hash.h>
- *
  * @return pointer to supplemental page table entry
  */
 struct suppl_page_tbl_ent* get_spte (void * unused_virtual_address){
