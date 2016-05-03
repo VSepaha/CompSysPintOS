@@ -15,9 +15,10 @@ Prit Modi <pmm176@scraletmail.rutgers.edu>
 >> Fill in the contribution of each member.
 
 In the vm folder:
-- Prit: swap.c and swap.h
-- Kevin: page.c and page.h
+
 - Vineet: frame.c and frame.h
+- Kevin: page.c and page.h
+- Prit: swap.c and swap.h
 
 
 ---- PRELIMINARIES ----
@@ -195,6 +196,13 @@ page faults when syscalls are made referring to the page.
 >> B1: Copy here the declaration of each new or changed `struct' or
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
+
+vm/swap.h:
+
+struct block *swap_block; //Swap pages are read from and written to this block
+struct bitmap *swap_map; //Helps determine if a page is occupying the disk
+			   at contiguous sectors or are they free for swapping
+struct lock swap_lock; //Global swap lock
 
 ---- ALGORITHMS ----
 DONE
