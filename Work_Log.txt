@@ -26,8 +26,14 @@ functions are used to do.
 	- Corresponding comments have been added
 
 	- Implementation near completion for page.c. page.h needs work done
-	
 =======
+4/20/16
+@Prit Modi
+	- Worked on swap.h and swap.c
+	- Added structs
+	- Implemented start_swap
+	
+=======	
 4/21/16
 @Vineet Sepaha
 	Worked on exception.c and syscall.h
@@ -53,6 +59,9 @@ of page.c, page.h, swap.c and swap.h.
 	Working on process.c to see where to implement certain functions.
 	Also added a Makefile.build which needs to replace the Makefile.build in the pintos/src directory.
 	
+@Prit Modi
+	- Worked on swap.h and swap.c
+	- Implemented swap_in
 =======
 4/24/16
 @Vineet Sepaha
@@ -73,7 +82,18 @@ of page.c, page.h, swap.c and swap.h.
 	- Continued revising page.c and page.h
 	- Further revision is needed...
 	- Will make changes to thread.h in the future
+	
+@Prit Modi
+	- Continued working on swap.h and swap.c
+	- Implemented swap_out
+	
+=======
+4/28/16
+@Prit Modi
+	- Continued revising swap.c and swap.h
+	- Troubleshooting and fixing errors on the go
 
+=======
 4/30/16
 @Kevin Wu
 	- Revisions made to page.c and page.h
@@ -81,7 +101,10 @@ of page.c, page.h, swap.c and swap.h.
 	- Added additional lines to /src/threads/thread.h
 	- Revisions made to syscall.c
 	- Additional lines added to syscall.h
-
+	
+@Prit Modi
+	- Finished working on swap.c and swap.h
+	- No compiling errors 
 	******************************************************
 	- A LOT of work is needed to be done on syscall.c
 		- I don't wanna do it :<
