@@ -102,9 +102,6 @@ of page.c, page.h, swap.c and swap.h.
 	- Revisions made to syscall.c
 	- Additional lines added to syscall.h
 	
-@Prit Modi
-	- Finished working on swap.c and swap.h
-	- No compiling errors 
 	******************************************************
 	- A LOT of work is needed to be done on syscall.c
 		- I don't wanna do it :<
@@ -126,3 +123,7 @@ of page.c, page.h, swap.c and swap.h.
 
 	- Errors are still persistent
 		- Personally, I don't believe we are going to be able to get this project to even compile...
+
+@Prit Modi
+	- Finished working on swap.c and swap.h
+	- No compiling errors 
