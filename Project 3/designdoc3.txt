@@ -103,8 +103,6 @@ vm/page.h :
 ---- ALGORITHMS ----
 
 =======
-
-DONE
 >> A2: In a few paragraphs, describe your code for locating the frame,
 >> if any, that contains the data of a given page.
 
@@ -133,7 +131,6 @@ DONE
 	page table struct is then set to "true" in order to indicate that
 	it is indeed loaded.
 
-DONE
 >> A3: How does your code coordinate accessed and dirty bits between
 >> kernel and user virtual addresses that alias a single frame, or
 >> alternatively how do you avoid the issue?
@@ -147,7 +144,6 @@ use the kernel virtual memory address.
 
 
 ---- SYNCHRONIZATION ----
-DONE
 >> A4: When two user processes both need a new frame at the same time,
 >> how are races avoided?
 
@@ -157,7 +153,6 @@ avoid these race conditions, we used a frame table lock which isimplemented
 whenever a frame is added or evicted.
 
 ---- RATIONALE ----
-DONE
 >> A5: Why did you choose the data structure(s) that you did for
 >> representing virtual-to-physical mappings?
 
@@ -199,13 +194,12 @@ page faults when syscalls are made referring to the page.
 
 vm/swap.h:
 
-struct block *swap_block; //Swap pages are read from and written to this block
-struct bitmap *swap_map; //Helps determine if a page is occupying the disk
-			   at contiguous sectors or are they free for swapping
-struct lock swap_lock; //Global swap lock
+struct block *swap_block; 		// Swap pages are read from and written to this block
+struct bitmap *swap_map; 		// Helps determine if a page is occupying the disk
+			   					// at contiguous sectors or are they free for swapping
+struct lock swap_lock; 			//Global swap lock
 
 ---- ALGORITHMS ----
-DONE
 >> B2: When a frame is required but none is free, some frame must be
 >> evicted.  Describe your code for choosing a frame to evict.
 
@@ -221,7 +215,6 @@ corresponding sector and sets the page's swap index. Next we set the page's
 is_loaded flag to false and we deallocate the memory (remove the frame from
 the table and free the memory). Lastly, we return palloc_get_page(flags).
 
-DONE
 >> B3: When a process P obtains a frame that was previously used by a
 >> process Q, how do you adjust the page table (and any other data
 >> structures) to reflect the frame Q no longer has?
@@ -233,18 +226,17 @@ to the current thread of the spte the frame is being used for. The only
 problem is that since we are deallocation and reallocating memory, it
 is inefficient.
 
-DONE
 >> B4: Explain your heuristic for deciding whether a page fault for an
 >> invalid virtual address should cause the stack to be extended into
 >> the page that faulted.
 
-If a spte is not present in the current thread's spt then there is a possibility
-that the virtual address is a stack access.
-Now if the virtual address causes the stack to grow beyond its max size, then
-the access is considered invalid and we kill the user program.
+If a supplemental page table entry is not present in the current thread's 
+supplemental page table then there is a possibility that the virtual address 
+is a stack access. Now if the virtual address causes the stack to grow 
+beyond its max size, then the access is considered invalid and we kill the 
+user program.
 
----- SYNCHRONIZATION ---- KEVIN 
-DONE
+---- SYNCHRONIZATION ----  
 >> B5: Explain the basics of your VM synchronization design.  In
 >> particular, explain how it prevents deadlock.  (Refer to the
 >> textbook for an explanation of the necessary conditions for
@@ -264,7 +256,6 @@ accessing the data required, it is reverted to false. Since our system avoids
 entering anothers critical section, we essentially avoid deadlocks presented 
 by waiting for a section to complete.
 
-DONE
 >> B6: A page fault in process P can cause another process Q's frame
 >> to be evicted.  How do you ensure that Q cannot access or modify
 >> the page during the eviction process?  How do you avoid a race
@@ -284,7 +275,6 @@ the usage of page faults. In such a particular situation, Q's kernel
 thread will page fault and will go to the supplemental page table entry 
 and reloads the frame.
 
-DONE
 >> B7: Suppose a page fault in process P causes a page to be read from
 >> the file system or swap.  How do you ensure that a second process Q
 >> cannot interfere by e.g. attempting to evict the frame while it is
@@ -300,7 +290,6 @@ instance is when process Q is attempting to evict a frame while at the
 same time process P is trying to pin it. At such an occurance, Q will 
 simply page fault and reloads the memory.
 
-DONE
 >> B8: Explain how you handle access to paged-out pages that occur
 >> during system calls.  Do you use page faults to bring in pages (as
 >> in user programs), or do you have a mechanism for "locking" frames
@@ -319,7 +308,6 @@ with it are evicted in order to free memory space.
 
 
 ---- RATIONALE ----
-DONE
 >> B9: A single lock for the whole VM system would make
 >> synchronization easy, but limit parallelism.  On the other hand,
 >> using many locks complicates synchronization and raises the
@@ -354,8 +342,8 @@ userprog/process.h :
 	struct mmap_file
 	{
 		struct suppl_page_tbl_ent *spte;	// pointer to the entry within the supplemental page table
-		int mapid;		// Idenfitication for each corresponding mapped page
-		struct list_elem elem;	// the list element in the mmap list
+		int mapid;							// Idenfitication for each corresponding mapped page
+		struct list_elem elem;				// the list element in the mmap list
 	};
 }
 
@@ -381,10 +369,10 @@ Memory Mapped files are munmapped and all of the other pages are trashed.
 
 When determining whether a new file mapping overlaps any existing you have
 to check several things. The file is mapped page by page to it's address and 
-for each page it's supplemental page table entry is added onto the thread's hash table. Now, if the
-hash table finds out that there are duplicate entries, that means that the
-new file overlaps with an existing statement. And thus all the previous
-mappings based on the new files are unmapped.
+for each page it's supplemental page table entry is added onto the thread's 
+hash table. Now, if the hash table finds out that there are duplicate entries, 
+that means that thenew file overlaps with an existing statement. And thus all 
+the previous mappings based on the new files are unmapped.
 
 ---- RATIONALE ----
 
@@ -419,12 +407,11 @@ the quarter.
 
 This assignment was the hardest assignment so far. There were numerous
 portions of this assignment that caused misunderstandings between the group 
-members. Most of these misunderstandings were due to the lack of prepartion
+members. Most of these misunderstandings were due to the lack of preparation
 we had coming into this assignment. 
 
-Overall, each of the three problems
-proved its worth as an high hurdle for us to come over in order to provide
-a semi-working project.
+Overall, each of the three problems proved its worth as a
+high hurdle for us to come over in order to provide a semi-working project.
 
 This project took a substantial amount of time in all aspects. 
 
