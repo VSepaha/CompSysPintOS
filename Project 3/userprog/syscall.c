@@ -36,13 +36,7 @@
 #define MAX_ARGS 3
 
 void get_arg(struct intr_frame *);
-struct suppl_page_tbl_ent* check_valid_ptr(const void *vaddr, void* esp);
-void check_valid_buffer (void* buffer, unsigned size, void* esp, bool to_write);
-void check_valid_string(const void* str, void* esp);
-void check_write_permission(struct suppl_page_tbl_ent *spte);
-void unpin_ptr(void* vaddr);
-void unpin_string(void* str);
-void unpin_buffer(void* buffer, unsigned size);
+
 
 
 /*
@@ -53,6 +47,8 @@ void unpin_buffer(void* buffer, unsigned size);
 // struct lock file_lock;
 
 static void syscall_handler (struct intr_frame *);
+
+struct suppl_page_tbl_ent* check_valid_ptr(const void *vaddr, void* esp);
 
 void
 syscall_init (void) 
@@ -181,7 +177,7 @@ read (int fd, void *buffer, unsigned size)
   int count = 0, result = 0;
   if (fd == STDIN_FILENO)
     {
-      while (count < size)
+      while ((unsigned int)count < (unsigned int)size)
         {
           *((uint8_t *) (buffer + count)) = input_getc ();
           count++;
@@ -380,6 +376,7 @@ syscall_handler (struct intr_frame *f)
         printf ("Invalid syscall!\n");
         thread_exit();
     }
+  }  
 } 
 
 /*
@@ -546,49 +543,3 @@ void unpin_buffer (void* buffer, unsigned size)
       local_buffer++;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

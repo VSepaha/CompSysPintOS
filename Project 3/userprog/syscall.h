@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "threads/synch.h"
+#include "vm/page.h"
 
 /* 
  * The following were added in...
@@ -37,7 +38,7 @@ struct child_process
 	bool exit;
 	int status;
 	struct semaphore load_sema;
-	struct sempahore exit_sema;
+	//struct sempahore exit_sema;
 	struct list_elem elem;
 };
 
@@ -72,6 +73,13 @@ unsigned tell (int fd);
 void close (int fd);
 int mmap (int fd, void *addr);
 void munmap (int mapping);
+void check_valid_buffer (void* buffer, unsigned size, void* esp, bool to_write);
+void check_valid_string (const void* str, void* esp);
+void check_write_permission (struct suppl_page_tbl_ent *spte);
+void unpin_ptr (void* vaddr);
+void unpin_string (void* str);
+void unpin_buffer (void* buffer, unsigned size);
+
 
 
 #endif /* userprog/syscall.h */
