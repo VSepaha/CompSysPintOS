@@ -42,15 +42,29 @@ Resources
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
+vm/frame.h :
+{
+	struct frame_tbl_list; // Used as the frame table
+	struct frame_tbl_lock; // Used for the lock of the frame table
+	struct frame_tbl_ent {
+		void *frame; 
+		struct thread *thread;
+		struct suppl_page_tbl_ent *spte;
+		struct list_elem elem;
+	}
+}
+Purpose: This structure is used to hold the frame table entry
+
 threads/thread.h :
 {
 	struct thread
 	{
 		...
-		struct hash spt; 	// Creation  of the supplemental page table
+		struct hash spt; 	// 
 		...
 	}
 }
+Purpose: Used to create the supplemental page table
 
 vm/page.h :
 {
