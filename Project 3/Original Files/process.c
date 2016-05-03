@@ -15,6 +15,7 @@
 #include "threads/init.h"
 #include "threads/interrupt.h"
 #include "threads/palloc.h"
+#include "threads/malloc.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "threads/synch.h"
@@ -65,7 +66,7 @@ process_execute (const char *args)
 
   /* Tokenize arguments. */
   argument_tokenize (args_struct_ptr);
-  if (args_struct_ptr->argc == BAD_ARGS)
+  if ((unsigned int)args_struct_ptr->argc == (unsigned int)BAD_ARGS)
     {
       palloc_free_page (args_struct_ptr);
       return TID_ERROR;
