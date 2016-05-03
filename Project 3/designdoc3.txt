@@ -42,7 +42,37 @@ Resources
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
+threads/thread.h :
+{
+	struct thread
+	{
+		...
+		struct hash spt; 	// Creation  of the supplemental page table
+		...
+	}
+}
 
+vm/page.h :
+{
+	// current entry of the supplemental page table
+	struct suppl_page_tbl_ent
+	{
+		uint8_t type;	// type of entry (file,swap, mmap)
+		void *unused_virtual_address;	// pointer to the unused portion of the virtual memory mapped to the physical address
+		bool writable;		// determine whether or not the physical page is able to be written
+		bool is_loaded;		// boolean variable to determine if a page is loaded into physical memory
+		bool pinned;		// Most important variable
+			// set to true if kernel is accessing the page table
+			// is set to false otherwise...
+
+		struct file *file; 	// the file of the page
+		size_t offset;		// offset of the page that was read
+		size_t read_bytes;	// number of valid read bytes
+		size_t zero_bytes;	// number of zero bytes
+
+		struct hash_elem element;	// the element to be added to the supplemental page table
+	}
+}
 
 
 ---- ALGORITHMS ----
