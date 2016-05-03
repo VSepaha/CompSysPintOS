@@ -211,13 +211,18 @@ to the current thread of the spte the frame is being used for. The only
 problem is that since we are deallocation and reallocating memory, it
 is inefficient.
 
-VINEET
+DONE
 >> B4: Explain your heuristic for deciding whether a page fault for an
 >> invalid virtual address should cause the stack to be extended into
 >> the page that faulted.
 
----- SYNCHRONIZATION ---- KEVIN
+If a spte is not present in the current thread's spt then there is a possibility
+that the virtual address is a stack access.
+Now if the virtual address causes the stack to grow beyond its max size, then
+the access is considered invalid and we kill the user program.
 
+---- SYNCHRONIZATION ---- KEVIN 
+DONE
 >> B5: Explain the basics of your VM synchronization design.  In
 >> particular, explain how it prevents deadlock.  (Refer to the
 >> textbook for an explanation of the necessary conditions for
@@ -237,6 +242,7 @@ accessing the data required, it is reverted to false. Since our system avoids
 entering anothers critical section, we essentially avoid deadlocks presented 
 by waiting for a section to complete.
 
+DONE
 >> B6: A page fault in process P can cause another process Q's frame
 >> to be evicted.  How do you ensure that Q cannot access or modify
 >> the page during the eviction process?  How do you avoid a race
@@ -256,6 +262,7 @@ the usage of page faults. In such a particular situation, Q's kernel
 thread will page fault and will go to the supplemental page table entry 
 and reloads the frame.
 
+DONE
 >> B7: Suppose a page fault in process P causes a page to be read from
 >> the file system or swap.  How do you ensure that a second process Q
 >> cannot interfere by e.g. attempting to evict the frame while it is
@@ -271,6 +278,7 @@ instance is when process Q is attempting to evict a frame while at the
 same time process P is trying to pin it. At such an occurance, Q will 
 simply page fault and reloads the memory.
 
+DONE
 >> B8: Explain how you handle access to paged-out pages that occur
 >> during system calls.  Do you use page faults to bring in pages (as
 >> in user programs), or do you have a mechanism for "locking" frames
@@ -289,13 +297,20 @@ with it are evicted in order to free memory space.
 
 
 ---- RATIONALE ----
-VINEET
+DONE
 >> B9: A single lock for the whole VM system would make
 >> synchronization easy, but limit parallelism.  On the other hand,
 >> using many locks complicates synchronization and raises the
 >> possibility for deadlock but allows for high parallelism.  Explain
 >> where your design falls along this continuum and why you chose to
 >> design it this way.
+
+In the design, we implemented high parallelism. Since this led to a 
+greater risk of creating a deadlock, we created a boolean which was 
+used to detect possible race conditions using page faults. This design
+is fairly simple, and doesnt have a huge need for multiple locks.
+(There are situations where this implementation could fail, however,
+the chances of it failing is fairly low).
 
 			 MEMORY MAPPED FILES
 			 ===================
