@@ -66,8 +66,8 @@ vm/page.h :
 		bool is_loaded;		// boolean variable to determine if a page is loaded into physical memory
 		
 		bool pinned;		// Most important variable
-			// set to true if kernel is accessing the page table
-			// is set to false otherwise...
+							// set to true if kernel is accessing the page table
+							// is set to false otherwise...
 
 		struct file *file; 	// the file of the page
 		
@@ -306,6 +306,22 @@ VINEET
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
+threads/thread.h :
+{
+	struct list mmap_list;		// List of memory mapped pages
+	int mapid;					// Identification for each corresponding thread
+}
+
+userprog/process.h :
+{
+	struct mmap_file
+	{
+		struct suppl_page_tbl_ent *spte;	// pointer to the entry within the supplemental page table
+		int mapid;		// Idenfitication for each corresponding mapped page
+		struct list_elem elem;	// the list element in the mmap list
+	};
+}
+
 ---- ALGORITHMS ----
 
 >> C2: Describe how memory mapped files integrate into your virtual
@@ -328,9 +344,9 @@ Memory Mapped files are munmapped and all of the other pages are trashed.
 
 When determining whether a new file mapping overlaps any existing you have
 to check several things. The file is mapped page by page to it's address and 
-for each page it's spte is added onto the thread's hast table. Now, if the
+for each page it's supplemental page table entry is added onto the thread's hash table. Now, if the
 hash table finds out that there are duplicate entries, that means that the
-new file overlaps with an existing statement. And thus all the previos
+new file overlaps with an existing statement. And thus all the previous
 mappings based on the new files are unmapped.
 
 ---- RATIONALE ----
@@ -346,9 +362,9 @@ The implementation does share some of the code for both situations because
 like mentioned above both executable files and memory mapped files are
 loaded in the same way. They both make use of the load file function when
 their pages are in the process of being loaded into physical memory.
-Furthermore, in fram evication, memory mapped dirty pages are just written
-to their corresponding files where as the clean memoery mapped dirty pages
-are not written. So this makes it a bit easier when it comes to implementing
+Furthermore, in frame eviction, memory mapped dirty pages are just written
+to their corresponding files where as the clean memory mapped dirty pages
+are not written. So, this makes it a bit easier when it comes to implementing
 memory mapped files since it's essentially an extension of the executables
 class. 
 
@@ -364,12 +380,36 @@ the quarter.
 >> In your opinion, was this assignment, or any one of the three problems
 >> in it, too easy or too hard?  Did it take too long or too little time?
 
+This assignment was the hardest assignment so far. There were numerous
+portions of this assignment that caused misunderstandings between the group 
+members. Most of these misunderstandings were due to the lack of prepartion
+we had coming into this assignment. 
+
+Overall, each of the three problems
+proved its worth as an high hurdle for us to come over in order to provide
+a semi-working project.
+
+This project took a substantial amount of time in all aspects. 
+
 >> Did you find that working on a particular part of the assignment gave
 >> you greater insight into some aspect of OS design?
+
+Despite the project's difficulty setting placed on the highest mode possible,
+this project provided a great deal of insight for OS design. This project made 
+us appreciate the programmers who had to solve these dilemmas in order for us 
+to have the current OS. 
+
+Each of the three respective problems all brought forth insight we would not 
+have gained if we weren't assigned such a difficult project.
 
 >> Is there some particular fact or hint we should give students in
 >> future quarters to help them solve the problems?  Conversely, did you
 >> find any of our guidance to be misleading?
+
+Warn students that they should put aside an ample amount of time (8 hours a day) 
+working on this project. 
+
+The guidance we received was decent, but not sufficient enough. 
 
 >> Do you have any suggestions for the TAs to more effectively assist
 >> students, either for future quarters or the remaining projects?
