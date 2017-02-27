@@ -1,14 +1,5 @@
 Pintos Project 3: Virtual Memory
 
-=========================================================================================================================================
-TOTALLY COPY THIS PROJECT VERBATIM IF YOU WANT A 100 FOR YOUR COURSE. GURANTEED WORKS!
-FEEL FREE TO COPY PASTA THIS SHIT. DEFINITELY NOT COPYRIGHTED OR ANYTHING!
-
-👌👀👌👀👌👀👌👀👌👀 good shit go౦ԁ sHit👌 thats ✔ some good👌👌shit right👌👌th 👌 ere👌👌👌 right✔there ✔✔if i do ƽaү so my selｆ 💯 i say so 💯 thats what im talking about right there right there (chorus: ʳᶦᵍʰᵗ ᵗʰᵉʳᵉ) mMMMMᎷМ💯 👌👌 👌НO0ОଠＯOOＯOОଠଠOoooᵒᵒᵒᵒᵒᵒᵒᵒᵒ👌 👌👌 👌 💯 👌 👀 👀 👀 👌👌Good shit
-
-
-=========================================================================================================================================
-
 Components of Project:
 1) Design Doc (UNFINISHED)
 2) Paging (UNFINISHED)
