@@ -31,7 +31,7 @@ typedef int tid_t;
    thread structure itself sits at the very bottom of the page
    (at offset 0).  The rest of the page is reserved for the
    thread's kernel stack, which grows downward from the top of
-   the page (at offset 4 kB).  Here's an illustration:
+   the page (at offset 4 kB).
 
         4 kB +---------------------------------+
              |          kernel stack           |
